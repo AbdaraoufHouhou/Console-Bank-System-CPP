@@ -1,0 +1,6355 @@
+#pragma once
+#include<iostream>
+#include<string>
+#include"clsBankClient.h"
+#include"clsScreen.h"
+#include"ClsInputValidate.h"
+using namespace std;
+
+class clsAddNewClientScreen:protected clsScreen
+{
+  private:
+	  static void _ReadClientInfo(clsBankClient& Client)
+	  {
+		  cout << "\nEnter FirstName: ";
+
+		  Client.FirtsName = ClsInputValidate::ReadString();
+
+		  cout << "\nEnter LastName: ";
+		  Client.LastName = ClsInputValidate::ReadString();
+
+		  cout << "\nEnter Email: ";
+		  Client.Email = ClsInputValidate::ReadString();
+
+		  cout << "\nEnter Phone: ";
+		  Client.Phone = ClsInputValidate::ReadString();
+
+		  cout << "\nEnter PinCode: ";
+		  Client.PinCod = ClsInputValidate::ReadString();
+
+		  cout << "\nEnter Account Balance: ";
+		  Client.AccounBalanc = ClsInputValidate::ReadFloatNumber();
+
+
+	  }
+
+	  static void _PrintClient(clsBankClient &Clint)
+	  {
+		  cout << "\nClient Card:";
+		  cout << "\n---------------------------------";
+		  cout << "\nFirstName      :" << Clint.FirtsName << endl;
+		  cout << "\nLastName       :" << Clint.LastName << endl;
+		  cout << "\nFullName       :" << Clint.FullName() << endl;
+		  cout << "\nEmail          :" << Clint.Email << endl;
+		  cout << "\nPhone          :" << Clint.Phone << endl;
+		  cout << "\nAccountNember  :" << Clint.GetAccountNamber() << endl;
+		  cout << "\nPassWord       :" << Clint.PinCod << endl;
+		  cout << "\nBalance        :" << Clint.AccounBalanc << endl;
+		  cout << "\n---------------------------------\n";
+	  }
+
+
+  public:
+
+	  static void ShowAddNewClientScreen()
+	  {
+		  if (!CheckAccessRights(clsUser::enPermissions::pAddNewClient))
+		  {
+			  return;
+		  }
+		  _DrawScreenHeader("\t  Add New Client Screen");
+		  string AccountNumber="";
+
+		  cout << "\nPlease Enter Account Number: ";
+		  AccountNumber = ClsInputValidate::ReadString();
+
+		  while (clsBankClient::IsClientExist(AccountNumber))
+		  {
+			  cout << "\nAccount Number Is Already Used, Choose another one: ";
+			  AccountNumber = ClsInputValidate::ReadString();
+
+		  }
+
+		  clsBankClient NewClient = clsBankClient::GetAddNewClientObject(AccountNumber);
+		  _ReadClientInfo(NewClient);
+
+		  clsBankClient::enSaveResults SaveResult;
+
+		  SaveResult = NewClient.Save();
+
+		  switch (SaveResult)
+		  {
+		    case clsBankClient::svSucceeded:
+		    {
+				
+				 cout << "\nAccount Addeded Successfully :-)\n";
+				_PrintClient(NewClient);
+				break;
+		    }
+			case clsBankClient::svFaildClientExist:
+			{
+				cout << "\nError account was not saved because account number is used!\n";
+				break;
+			}
+			case clsBankClient::svFaildEmptyObject:
+			{
+				cout << "\nError account was not saved because account number is used!\n";
+				break;
+			}
+
+
+		  }
+
+
+
+
+
+
+
+	  }
+
+	 
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"ClsString.h"
+#include"ClsInputValidate.h"
+#include"clsUser.h"
+using namespace std;
+
+
+class clsAddNewUserScreen:protected clsScreen
+{
+ private:
+
+	 static int _ReadPermissionsToSet()
+	 {
+		 char Answer = 'n';
+		 short Permissions = 0;
+
+		 cout << "\nDo you want to give full access? y/n? ";
+		 cin >> Answer;
+		 if (Answer=='y'||Answer=='Y')
+		 {
+			 return -1;
+		 }
+		 cout << "\nDo you want to give access to : \n ";
+
+		 cout << "\nShow Clint List? N/Y ?";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pListClients;
+		 }
+
+		 cout << "\nAdd New Client? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pAddNewClient;
+		 }
+
+		 cout << "\nDelete Client? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pDeleteClient;
+		 }
+
+		 cout << "\nUpdate Client? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pUpdateClients;
+
+		 }
+
+		 cout << "\nFind Client? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pFindClient;
+		 }
+
+		 cout << "\nTransactions? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pTranactions;
+		 }
+
+		 cout << "\nManage Users? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pManageUsers;
+		 }
+
+		 cout << "\nShow Login Register? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pShowLogInRegister;
+		 }
+
+		 cout << "\nShow Currency Exchang? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pCurrencyExchang;
+		 }
+
+		 return Permissions;
+
+
+
+	 }
+
+	 static void _ReadUserInfo(clsUser& user)
+	 {
+		 cout << "\nEnter FirstName:";
+		 user.FirtsName = ClsString::ReadString();
+
+		 cout << "\nEnter LastName:";
+		 user.LastName = ClsString::ReadString();
+
+		 cout << "\nEnter Email:";
+		 user.Email = ClsString::ReadString();
+
+		 cout << "\nEnter Phon:";
+		 user.Phone = ClsString::ReadString();
+
+		 cout << "\nEnter PassWord:";
+		 user.PassWord = ClsString::ReadString();
+
+		 cout << "\nEnter Permissions:\n";
+		 user.Permissions = _ReadPermissionsToSet();
+
+	 }
+
+	 static void _PrintUser(clsUser& User)
+	 {
+		 cout << "\nClient Card:";
+		 cout << "\n---------------------------------";
+		 cout << "\nFirstName   :" << User.FirtsName << endl;
+		 cout << "\nLastName    :" << User.LastName << endl;
+		 cout << "\nFullName    :" << User.FirtsName << endl;
+		 cout << "\nEmail       :" << User.Email << endl;
+		 cout << "\nPhone       :" << User.Phone << endl;
+		 cout << "\nUser Name   :" << User.UserName << endl;
+		 cout << "\nPassWord    :" << User.PassWord << endl;
+		 cout << "\nPermissions :" << User.Permissions << endl;
+		 cout << "\n---------------------------------\n";
+
+	 }
+
+
+ public:
+	 static void ShowAddNewUserScreen()
+	 {
+		 _DrawScreenHeader("\t  Add New User Screen");
+
+		 string UserName = "";
+		 cout << "\nPlease Enter UserName: ";
+		 UserName = ClsInputValidate::ReadString();
+
+		 while (clsUser::IsUserExist(UserName))
+		 {
+			 cout << "\nUserName Is Already Used, Choose another one: ";
+			 UserName = ClsInputValidate::ReadString();
+
+		 }
+
+		 clsUser NewUser = clsUser::GetAddNewUserObject(UserName);
+
+		 _ReadUserInfo(NewUser);
+		 
+
+		 clsUser::enSaveResults SaveResult;
+
+		 SaveResult = NewUser.Save();
+
+		 switch (SaveResult)
+		 {
+		 case clsUser::enSaveResults::svFaildEmptyObject:
+		   {
+			   cout << "\nError User was not saved because it's Empty";
+			   break;
+		   }
+
+		 case clsUser::enSaveResults::svFaildUserExist:
+		   {
+			   cout << "\nError User was not saved because UserName is used!\n";
+			   break;
+		   }
+
+		   case clsUser::enSaveResults::svSucceeded:
+		   {
+			   cout << "\nUser Addeded Successfully :-)\n";
+			   _PrintUser(NewUser);
+
+			   break;
+		   }
+
+		 }
+		 
+		 
+	 }
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsPerson.h"
+#include<fstream>
+#include<vector>
+#include"ClsData.h"
+#include"ClsString.h"
+#include"Global.h"
+using namespace std;
+
+
+class clsBankClient : public clsPerson
+{
+  private:
+	  enum enMod{EmptyMode=0,UpdateMode=1,AddNewMode=3};
+	  enMod _Mod;
+
+	  string _AccountNumber;
+	  string _PinCode;
+	  float _AccountBalanc;
+	  bool _DeleteMark = false;
+
+	  static clsBankClient _ConvertLinetoClientObject(string Line,string Seperator="#//#")
+	  {
+		  vector<string>Vclinet;
+		  Vclinet = ClsString::SplitString(Line, Seperator);
+		  return clsBankClient(enMod::UpdateMode, Vclinet[0], Vclinet[1], Vclinet[2], Vclinet[3], Vclinet[4], Vclinet[5], stof(Vclinet[6]));
+
+	  }
+	  static clsBankClient _GetEmptyClinetOpject()
+	  {
+		  return clsBankClient(enMod::EmptyMode, "", "", "", "", "", "", 0);
+	  }
+
+	  static vector<clsBankClient>_LoadClientsDataFromFile()
+	  {
+		  vector<clsBankClient>vClients;
+
+		  fstream MyFile;
+		  MyFile.open("Clinet.txt", ios::in);
+
+		  if (MyFile.is_open())
+		  {
+			  string line;
+
+			  while (getline(MyFile,line))
+			  {
+				  clsBankClient Client = _ConvertLinetoClientObject(line);
+
+				  vClients.push_back(Client);
+
+
+			  }
+
+			  MyFile.close();
+		  }
+
+		  return vClients;
+
+	  }
+
+	  static string _ConverClientObjectToLine(clsBankClient clinet, string Seperator = "#//#")
+	  {
+		  string stClientRecord = "";
+
+		  stClientRecord = stClientRecord+ clinet.FirtsName + Seperator;
+		  stClientRecord = stClientRecord + clinet.LastName + Seperator;
+		  stClientRecord = stClientRecord + clinet.Email + Seperator;
+		  stClientRecord = stClientRecord + clinet.Phone + Seperator;
+		  stClientRecord = stClientRecord + clinet.GetAccountNamber() + Seperator;
+		  stClientRecord = stClientRecord + clinet.PinCod + Seperator;
+		  stClientRecord = stClientRecord + to_string(clinet.AccounBalanc);
+
+		  return stClientRecord;
+
+	  }
+	  static void _SaveCleintsDataToFile(vector<clsBankClient>vClients)
+	  {
+		  fstream MyFile;
+		  MyFile.open("Clinet.txt", ios::out);
+
+		  if (MyFile.is_open())
+		  {
+			  string DataLine;
+
+			  for (clsBankClient &C:vClients)
+			  {
+				  if (C._DeleteMark==false)
+				  {
+					  DataLine = _ConverClientObjectToLine(C);
+					  MyFile << DataLine << endl;
+				  }
+				 
+
+			  }
+			  MyFile.close();
+		  }
+
+
+	  }
+
+	  void  _Update()
+	  {
+		  vector<clsBankClient>_vClients;
+		  _vClients = _LoadClientsDataFromFile();
+
+		  for (clsBankClient &C:_vClients)
+		  {
+			  if (C.GetAccountNamber() == GetAccountNamber())
+			  {
+				  C = *this;
+				  break;
+			  }
+		  }
+
+		  _SaveCleintsDataToFile(_vClients);
+	  }
+	   void  _AddNewLineToFile(string LineClinet)
+	   {
+		   fstream MyFile;
+		   MyFile.open("Clinet.txt",  ios::out|ios::app);
+
+		   if (MyFile.is_open())
+		   {
+			   MyFile << LineClinet << endl;
+			   MyFile.close();
+
+		   }
+
+	   }
+	  void  _AddNew()
+	  {
+		  _AddNewLineToFile(_ConverClientObjectToLine(*this));
+	  }
+
+	  string _PrepareTransferLogRecord(float Amount, clsBankClient DestinationClient,string UserName,string Seperator="#//#")
+	  {
+		  string TransferLogRecord = "";
+
+		  TransferLogRecord += ClsDate::GetSystemDateTimeString() + Seperator;
+		  TransferLogRecord += GetAccountNamber() + Seperator;
+		  TransferLogRecord += DestinationClient.GetAccountNamber() + Seperator;
+		  TransferLogRecord += to_string(Amount) + Seperator;
+		  TransferLogRecord += to_string(AccounBalanc) + Seperator;
+		  TransferLogRecord += to_string(DestinationClient.AccounBalanc) + Seperator;
+		  TransferLogRecord += UserName;
+
+
+		  return TransferLogRecord;
+
+
+	  }
+
+	  void _RegisterTransferLog(float Amount, clsBankClient DestinationClient,string UserName)
+	  {
+		  string stDataLine = _PrepareTransferLogRecord(Amount, DestinationClient,UserName);
+
+		  fstream MyFile;
+		  MyFile.open("TransferLog.txt", ios::out | ios::app);
+
+		  if (MyFile.is_open())
+		  {
+			  MyFile << stDataLine << endl;
+
+			  MyFile.close();
+
+		  }
+
+	  }
+	  struct stTrnsferLogRecord;
+	  static stTrnsferLogRecord _ConvertTransferLogLineToRecord(string Line,string Seperator="#//#")
+	  {
+		  stTrnsferLogRecord TrnsferLogRecord;
+
+		  vector<string>vTrnsferLogRecordLine = ClsString::SplitString(Line, Seperator);
+		  TrnsferLogRecord.DateTime = vTrnsferLogRecordLine[0];
+		  TrnsferLogRecord.SourceAccountNumber = vTrnsferLogRecordLine[1];
+		  TrnsferLogRecord.DestinationAccountNumber= vTrnsferLogRecordLine[2];
+		  TrnsferLogRecord.Amount = stod(vTrnsferLogRecordLine[3]);
+		  TrnsferLogRecord.srcBalanceAfter= stod(vTrnsferLogRecordLine[4]);
+		  TrnsferLogRecord.destBalanceAfter= stod(vTrnsferLogRecordLine[5]);
+		  TrnsferLogRecord.UserName= vTrnsferLogRecordLine[6];
+
+		  return TrnsferLogRecord;
+	  }
+	  
+  public:
+	  struct stTrnsferLogRecord
+	  {
+		  string DateTime;
+		  string SourceAccountNumber;
+		  string DestinationAccountNumber;
+		  float Amount;
+		  float srcBalanceAfter;
+		  float destBalanceAfter;
+		  string UserName;
+
+	  };
+	 
+	  clsBankClient(enMod Mod,string FirstName, string LastName, string Email, string Phone, string AccountNamber, string PinCod, float AccountBalanc)
+		  :clsPerson( FirstName,  LastName,  Email, Phone)
+	  {
+		  _Mod = Mod;
+		  _AccountNumber = AccountNamber;
+		  _PinCode = PinCod;
+		  _AccountBalanc = AccountBalanc;
+	  }
+
+	  string GetAccountNamber()
+	  {
+		  return _AccountNumber;
+	  }
+
+	  void SetPinCod(string pinCod)
+	  {
+		  _PinCode = pinCod;
+	  }
+	  string GetPinCod()
+	  {
+		  return _PinCode;
+	  }
+	  __declspec(property(get=GetPinCod,put=SetPinCod))string PinCod;
+
+
+	  void SetAccountBalanc(float AccountBalanc)
+	  {
+		  _AccountBalanc = AccountBalanc;
+	  }
+	  float GetAccuntBalanc()
+	  {
+		  return _AccountBalanc;
+	  }
+	  __declspec(property(get = GetAccuntBalanc, put = SetAccountBalanc))float AccounBalanc;
+
+	  static clsBankClient Find(string AccountNumber)
+	  {
+		  fstream MyFile;
+		  MyFile.open("Clinet.txt", ios::in);
+
+		  if (MyFile.is_open())
+		  {
+			  string Line;
+
+			  while (getline(MyFile,Line))
+			  {
+				  
+					  clsBankClient Clinet = _ConvertLinetoClientObject(Line);
+					  if (Clinet.GetAccountNamber() == AccountNumber)
+					  {
+						  MyFile.close();
+						  return Clinet;
+
+					  }
+				  
+				
+
+			  }
+			  MyFile.close();
+		  }
+
+		  return _GetEmptyClinetOpject();
+
+
+	  }
+
+	  static clsBankClient Find(string AccountNumber,string PinCode)
+	  {
+		  fstream MyFile;
+		  MyFile.open("Clinet.txt", ios::in);
+
+		  if (MyFile.is_open())
+		  {
+			  string Line;
+			  while (getline(MyFile, Line))
+			  {
+				  clsBankClient Clinet = _ConvertLinetoClientObject(Line);
+				  if (Clinet.GetAccountNamber() == AccountNumber && Clinet.GetPinCod()==PinCode)
+				  {
+					  MyFile.close();
+					  return Clinet;
+
+				  }
+
+			  }
+			  MyFile.close();
+		  }
+
+		  return _GetEmptyClinetOpject();
+
+
+	  }
+
+	/*  void Print()
+	  {
+		  cout << "\nClient Card:";
+		  cout << "\n---------------------------------";
+		  cout << "\nFirstName      :" << FirtsName << endl;
+		  cout << "\nLastName       :" << LastName << endl;
+		  cout << "\nFullName       :" << FullName() << endl;
+		  cout << "\nEmail          :" << Email << endl;
+		  cout << "\nPhone          :" << Phone << endl;
+		  cout << "\nAccountNember  :" << _AccountNumber << endl;
+		  cout << "\nPassWord       :" << _PinCode << endl;
+		  cout << "\nBalance        :" << _AccountBalanc << endl;
+		  cout << "\n---------------------------------\n";
+	  }*/
+
+
+	  static bool IsEmpty(clsBankClient Client)
+	  {
+		  return(Client._Mod == enMod::EmptyMode);
+
+	  }
+
+	  bool IsEmpty()
+	  {
+		  return(_Mod == enMod::EmptyMode);
+
+	  }
+
+	  static bool IsClientExist(string AccountNumber)
+	  {
+		  clsBankClient client = clsBankClient::Find(AccountNumber);
+		  return !IsEmpty(client);
+
+	  }
+
+	  static clsBankClient  GetAddNewClientObject(string AccountNumber)
+	  {
+		  return clsBankClient(enMod::AddNewMode, "", "", "", "", AccountNumber, "", 0);
+	  }
+	  static enum enSaveResults { svFaildEmptyObject = 1, svSucceeded = 2,svFaildClientExist=3 };
+
+	  enSaveResults Save()
+	  {
+		  switch (_Mod)
+		  {
+			  if (IsEmpty())
+			  {
+				  return enSaveResults::svFaildEmptyObject;
+			  }
+		   
+			 case enMod::UpdateMode:
+			 {
+				 _Update();
+
+				 return enSaveResults::svSucceeded;
+				 break;
+			 }
+			 case  enMod::AddNewMode:
+			 {
+				 if (clsBankClient::IsClientExist(_AccountNumber))
+				 {
+					 return enSaveResults::svFaildClientExist;
+				 }
+				 else
+				 {
+					 _AddNew();
+					 _Mod = enMod::UpdateMode;
+					 return enSaveResults::svSucceeded;
+				 }
+				 
+
+
+				 break;
+			 }
+
+		  }
+
+	  }
+
+	  bool Delete()
+	  {
+		  vector<clsBankClient>_vClients;
+		  _vClients = _LoadClientsDataFromFile();
+
+		  for (clsBankClient &C:_vClients)
+		  {
+			  if (C._AccountNumber == _AccountNumber)
+			  {
+				  C._DeleteMark = true;
+				  break;
+			  }
+
+		  }
+		  _SaveCleintsDataToFile(_vClients);
+
+		  *this = _GetEmptyClinetOpject();
+
+		  return true;
+	  }
+
+	  static vector<clsBankClient>GetClientsList()
+	  {
+		  return _LoadClientsDataFromFile();
+	  }
+
+	  static double GetTotalBalances(vector<clsBankClient>vClinet)
+	  {
+		  double TotalBalances = 0;
+
+		  for (clsBankClient &C:vClinet)
+		  {
+			  TotalBalances += C.AccounBalanc;
+
+		  }
+		  return TotalBalances;
+
+	  }
+
+	  void Diposit(double amount)
+	  {
+		  _AccountBalanc += amount;
+		  Save();
+
+	  }
+
+	  bool Withdraw(double amount)
+	  {
+		  if (amount > _AccountBalanc)
+		  {
+			  return false;
+		  }
+		  else
+		  {
+			  _AccountBalanc -= amount;
+			  Save();
+			  return true;
+
+		  }
+		  
+
+	  }
+
+	  static double GetTotalBalances()
+	  {
+		  vector<clsBankClient>Vclinet = GetClientsList();
+
+		  double TotalBalances = 0;
+
+		  for (clsBankClient Clinet:Vclinet)
+		  {
+			  TotalBalances += Clinet.AccounBalanc;
+
+		  }
+
+
+		  return TotalBalances;
+	  }
+
+	  bool Transfer(float Amount,clsBankClient &DestinationClient,string UserName)
+	  {
+		  if (Amount>AccounBalanc)
+		  {
+			  return false;
+		  }
+		  else
+		  {
+			  Withdraw(Amount);
+			  DestinationClient.Diposit(Amount);
+			  _RegisterTransferLog(Amount, DestinationClient, UserName);
+
+			  return true;
+			  
+		  }
+
+	  }
+
+	  static vector<stTrnsferLogRecord>GetTransfersLogList()
+	  {
+
+		  vector<stTrnsferLogRecord>vTransferLogRecord;
+
+		  fstream Myfile;
+		  Myfile.open("TransferLog.txt", ios::in);
+
+		  if (Myfile.is_open())
+		  {
+			  string Line;
+			  stTrnsferLogRecord TransferRecord;
+
+			  while (getline(Myfile,Line))
+			  {
+				  TransferRecord = _ConvertTransferLogLineToRecord(Line);
+
+				  vTransferLogRecord.push_back(TransferRecord);
+
+			  }
+
+			  Myfile.close();
+		  }
+
+		  return vTransferLogRecord;
+	  }
+
+	
+	
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"clsCurrency.h"
+#include<iomanip>
+using namespace std;
+
+class clsCurrenciesListScreen:protected clsScreen
+{
+ private:
+	 static void PrintCurrencyRecordLine(clsCurrency Currency)
+	 {
+		 cout << setw(8) << left << "" << "| " << left << setw(30) << Currency.Country();
+		 cout << "| " << left << setw(8) << Currency.CurrencyCode();
+		 cout << "| " << left << setw(45) << Currency.CurrencyName();
+		 cout << "| " << left << setw(10) << Currency.Rate();
+
+	 }
+
+ public:
+	 static void ShowCurrenciesListScreen()
+	 {
+		 vector<clsCurrency>vCurrencys = clsCurrency::GetCurrenciesList();
+
+		 string Title = "\t  Currencies List Screen";
+		 string SubTitle = "\t   (" + to_string(vCurrencys.size()) + ") Currency.";
+
+		 _DrawScreenHeader(Title, SubTitle);
+
+		 cout << setw(8) << left << "" << "\n\t_______________________________________________________";
+		 cout<<"_______________________________________________\n" ; 
+
+		 cout << setw(8) << left << "" << "| " << left << setw(30) << "Country";
+		 cout << "| " << left << setw(8) << "Code";
+		 cout << "| " << left << setw(45) << "Name";
+		 cout << "| " << left << setw(10) << "Rate(1$)";
+		 cout << setw(8) << left << "" << "\n\t_______________________________________________________";
+		 cout << "_______________________________________________\n" << endl;
+		 
+
+
+		 if (vCurrencys.size()==0)
+		 {
+			 cout << "\t\t\t\tNo Currencies Available In the System!";
+		 }
+		 else
+		 {
+			 for (clsCurrency& Currency : vCurrencys)
+			 {
+				 PrintCurrencyRecordLine(Currency);
+				 cout << endl;
+			 }
+
+		 }
+		 cout << setw(8) << left << "" << "\n\t_______________________________________________________";
+		 cout << "_______________________________________________\n" << endl;
+
+
+		 
+	 }
+};
+
+
+#pragma once
+#include<iostream>
+#include<string>
+#include<vector>
+#include"ClsString.h"
+#include<fstream>
+using namespace std;
+
+class clsCurrency
+{
+ private:
+	 enum enMode { EmptyMode = 0, UpdateMode = 1 };
+	 enMode _Mode;
+	 string _Country;
+	 string _CurrencyCode;
+	 string _CurrencyName;
+	 float _Rate;
+
+	 static clsCurrency _ConvertLinetoCurrencyObject(string Line,string Seperator="#//#")
+	 {
+		 
+		 vector<string>vCurrencyData = ClsString::SplitString(Line,Seperator);
+
+		 return clsCurrency(enMode::UpdateMode, vCurrencyData[0], vCurrencyData[1], vCurrencyData[2], stod(vCurrencyData[3]));
+	
+	 }
+
+	 static clsCurrency _GetEmptyCurrencyObject()
+	 {
+		 return clsCurrency(enMode::EmptyMode, "", "", "", 0);
+	 }
+
+	 static vector<clsCurrency>_LoadCurrencysDataFromFile()
+	 {
+		 vector<clsCurrency>vCurrencys;
+
+		 fstream MyFile;
+		 MyFile.open("Currencies.txt", ios::in);
+
+		 if (MyFile.is_open())
+		 {
+			 string Line;
+			 
+
+			 while (getline(MyFile,Line))
+			 {
+				 clsCurrency Currency = _ConvertLinetoCurrencyObject(Line);
+
+				 vCurrencys.push_back(Currency);
+
+
+			 }
+			 MyFile.close();
+		 }
+
+		 return vCurrencys;
+	 }
+	 static string _ConverCurrencyObjectToLine(clsCurrency Currency,string Seperator="#//#")
+	 {
+		 string stCurrencyRecord="";
+
+		 stCurrencyRecord += Currency.Country() + Seperator;
+		 stCurrencyRecord += Currency.CurrencyCode() + Seperator;
+		 stCurrencyRecord += Currency.CurrencyName() + Seperator;
+		 stCurrencyRecord += to_string(Currency.Rate());
+
+		 return stCurrencyRecord;
+
+
+	 }
+	 void _SaveCurrencyDataToFile(vector<clsCurrency>vCurrencys)
+	 {
+		 fstream MyFile;
+
+		 MyFile.open("Currencies.txt", ios::out);
+
+		 string DataLine;
+		 if (MyFile.is_open())
+		 {
+			 for (clsCurrency &C:vCurrencys)
+			 {
+				  DataLine = _ConverCurrencyObjectToLine(C);
+				 MyFile << DataLine << endl;
+					 
+			 }
+			 MyFile.close();
+
+		 }
+
+	 }
+	 void _Update()
+	 {
+		 vector<clsCurrency>_vCurrencys = _LoadCurrencysDataFromFile();
+
+		 for (clsCurrency &C:_vCurrencys)
+		 {
+			 if (C.CurrencyCode()==CurrencyCode())
+			 {
+				 C = *this;
+				 break;
+			 }
+
+		 }
+		 _SaveCurrencyDataToFile(_vCurrencys);
+	 }
+
+ public:
+
+	 clsCurrency(enMode Mode,string Country,string CurrencyCode,string CurrencyName,float Rate)
+	 {
+		 _Mode = Mode;
+		 _Country = Country;
+		 _CurrencyCode = CurrencyCode;
+		 _CurrencyName = CurrencyName;
+		 _Rate = Rate;
+
+	 }
+	 clsCurrency()
+	 {
+
+	 }
+
+	 string Country()
+	 {
+		 return _Country;
+	 }
+	 string CurrencyCode()
+	 {
+		 return _CurrencyCode;
+	 }
+	 string CurrencyName()
+	 {
+		 return _CurrencyName;
+	 }
+
+	 float Rate()
+	 {
+		 return _Rate;
+	 }
+
+	 bool IsEmpty()
+	 {
+		 return (_Mode == enMode::EmptyMode);
+			 
+	 }
+
+	  void UpdateRate(float NewRate)
+	  {
+		  _Rate = NewRate;
+		  _Update();
+
+
+	  }
+
+	 static clsCurrency FindByCode(string CurrencyCode)
+	 {
+		 CurrencyCode = ClsString::UpperAllLetterOfString(CurrencyCode);
+
+		 fstream MyFile;
+		 MyFile.open("Currencies.txt", ios::in);
+
+		 if (MyFile.is_open())
+		 {
+			 string Line;
+			 
+
+			 while (getline(MyFile,Line))
+			 {
+				 clsCurrency Currency = _ConvertLinetoCurrencyObject(Line);
+
+				 if (Currency.CurrencyCode()==CurrencyCode)
+				 {
+					 MyFile.close();
+					 return Currency;
+
+				 }
+
+			 }
+
+			 MyFile.close();
+
+			 return _GetEmptyCurrencyObject();
+		 }
+
+	 }
+
+	 static clsCurrency FindByCountry(string Country)
+	 {
+		 Country = ClsString::UpperAllLetterOfString(Country);
+
+		 fstream MyFile;
+		 MyFile.open("Currencies.txt", ios::in);
+
+		 if (MyFile.is_open())
+		 {
+			 string Line;
+			 
+
+			 while (getline(MyFile, Line))
+			 {
+				 clsCurrency Currency = _ConvertLinetoCurrencyObject(Line);
+
+				 if (ClsString::UpperAllLetterOfString(Currency.Country())==Country)
+				 {
+					 MyFile.close();
+					 return Currency;
+
+				 }
+
+			 }
+
+			 MyFile.close();
+			 return _GetEmptyCurrencyObject();
+		 }
+
+	 }
+
+	 static bool IsCurrencyExist(string CurrencyCode)
+	 {
+		 clsCurrency C1 = FindByCode(CurrencyCode);
+		 return (!C1.IsEmpty());
+
+		 
+
+
+	 }
+
+	 static vector<clsCurrency>GetCurrenciesList()
+	 {
+		return  _LoadCurrencysDataFromFile();
+	 }
+
+	 float ConvertToUSD(float Amount)
+	 {
+		 return (float)(Amount / Rate());
+
+	 }
+	 float ConvertToOtherCurrency(float Amount,clsCurrency Currency2 )
+	 {
+		 float AmountInUSD = ConvertToUSD(Amount);
+
+		 if (Currency2.CurrencyCode()=="USD")
+		 {
+			 return AmountInUSD;
+		 }
+		 return (float)(AmountInUSD * (Currency2.Rate()));
+
+
+
+	 }
+	
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"clsCurrency.h"
+#include"ClsInputValidate.h"
+using namespace std;
+
+class clsCurrencyCalculatorScreen:protected  clsScreen
+{
+ private:
+
+	 static void _PrintCurrencyCard(clsCurrency Currency,string Title= "Currency Card:")
+	 {
+		 cout <<"\n" << Title << endl;
+		 cout << "_______________________________\n";
+		 cout << "\nCountry : " << Currency.Country();
+		 cout << "\nCode     :" << Currency.CurrencyCode();
+		 cout << "\nName     :" << Currency.CurrencyName();
+		 cout << "\nRate(1$) :" << Currency.Rate();
+		 cout << "\n_______________________________\n";
+
+	 }
+
+	 static clsCurrency _GetCurrency(string Message)
+	 {
+		 
+
+		 cout << Message ;
+
+		 string CurrencyCode = ClsInputValidate::ReadString();
+
+		 while (!clsCurrency::IsCurrencyExist(CurrencyCode))
+		 {
+			 cout << "\nCurrency is not found, choose another one: ";
+			 CurrencyCode = ClsInputValidate::ReadString();
+				
+		 }
+		 clsCurrency Currency = clsCurrency::FindByCode(CurrencyCode);
+
+		 return Currency;
+
+
+
+		
+	 }
+
+	 static float _ReadAmount()
+	 {
+		 float amount;
+
+		 cout << "\nEnter Amount to Exchange:";
+		 cin >> amount;
+
+		 return amount;
+
+	 }
+
+	 static void _PrintCalculationsResults(float Amount,clsCurrency Currency1,clsCurrency Currency2)
+	 {
+		
+
+		 _PrintCurrencyCard(Currency1, "Convert From:");
+		 float AmountInUSD = Currency1.ConvertToUSD(Amount);
+		 cout << Amount << " " << Currency1.CurrencyCode() << " = " << AmountInUSD << " " << "USD\n";
+
+
+		 if (Currency2.CurrencyCode() == "USD")
+		 {
+			 return;
+
+		 }
+
+		 cout << "\nConverting from USD to:\n";
+		 
+			 _PrintCurrencyCard(Currency2, "Convert To:");
+			 float AmountInCurrrency2 = Currency1.ConvertToOtherCurrency(Amount, Currency2);
+
+			 cout << Amount << " " << Currency1.CurrencyCode() << " = " << AmountInCurrrency2 << " " << Currency2.CurrencyCode();
+
+
+
+		 
+
+	 }
+	
+
+
+ public:
+	 static void ShowCurrencyCalculatorScreen()
+	 {
+		 
+
+		 char Continue = 'y';
+
+		 while (Continue == 'y' || Continue == 'Y')
+		 {
+			  system("cls");
+			 _DrawScreenHeader("\t Currency Calculator");
+
+			 clsCurrency CurrencyFrom = _GetCurrency("\nPleas Enter Currency 1 :");
+			 clsCurrency CurrencyTo = _GetCurrency("\nPleas Enter Currency 2 :");
+			 float amount = _ReadAmount();
+
+			 _PrintCalculationsResults(amount,CurrencyFrom,CurrencyTo);
+
+			 
+
+			 cout << "\n\nDo you want to perform another calculation? y/n ? ";
+			 cin >> Continue;
+
+		 } 
+
+		 
+
+	 }
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"ClsInputValidate.h"
+#include"clsMainScreen.h"
+#include"clsCurrenciesListScreen.h"
+#include"clsFindCurrencyScreen.h"
+#include"clsUpdateCurrencyRateScreen.h"
+#include"clsCurrencyCalculatorScreen.h"
+#include<iomanip>
+
+using namespace std;
+
+class clsCurrencyExchangeMainScreen:public clsScreen
+{
+ private:
+	 enum enCurrenciesMainMenueOptions{eListCurrencies=1,eFindCurrency,eUpdateCurrencyRate,eCurrencyCalculator,eMainMenue};
+	 static short ReadCurrenciesMainMenueOptions()
+	 {
+		 
+		 cout << setw(37) << left << "" << "Choose what do you want to do? [1 to 5]? ";
+		 short Choice = ClsInputValidate::ReadShortNumberBetween(1, 5);
+
+		 return Choice;
+	 }
+	 static void _GoBackToCurrenciesMenue()
+	 {
+		 cout << "\n\nPress any key to go back to Currencies Menue...";
+		 system("pause>0");
+		 ShowCurrenciesMenue();
+
+	 }
+
+	 static void _ShowCurrenciesListScreen()
+	 {
+		 clsCurrenciesListScreen::ShowCurrenciesListScreen();
+	 }
+
+
+	 static void _ShowFindCurrencyScreen()
+	 {
+		 //cout << "\nHere we will write the code..\n";
+		 clsFindCurrencyScreen::ShowFindCurrencyScreen();
+	 }
+
+
+	 static void _ShowUpdateCurrencyRateScreen()
+	 {
+		// cout << "\nHere we will write the code..\n";
+		 clsUpdateCurrencyRateScreen::ShowUpdateCurrencyRateScreen();
+	 }
+
+
+	 static void _ShowCurrencyCalculatorScreen()
+	 {
+		// cout << "\nHere we will write the code..\n";
+		 clsCurrencyCalculatorScreen::ShowCurrencyCalculatorScreen();
+	 }
+	
+
+		 
+
+
+	 static void _PerformCurrenciesMainMenueOptions(enCurrenciesMainMenueOptions CurrenciesMainMenueOptions)
+	 {
+		 switch (CurrenciesMainMenueOptions)
+		 {
+		   case enCurrenciesMainMenueOptions::eListCurrencies:
+		   {
+			   system("cls");
+			   _ShowCurrenciesListScreen();
+
+			   _GoBackToCurrenciesMenue();
+			   break;
+		   }
+		   case enCurrenciesMainMenueOptions::eFindCurrency:
+		   {
+			   system("cls");
+
+			   _ShowFindCurrencyScreen();
+			   _GoBackToCurrenciesMenue();
+			   break;
+		   }
+		   case enCurrenciesMainMenueOptions::eUpdateCurrencyRate:
+		   {
+			   system("cls");
+
+			   _ShowUpdateCurrencyRateScreen();
+			   _GoBackToCurrenciesMenue();
+			   break;
+		   }
+		   case enCurrenciesMainMenueOptions::eCurrencyCalculator:
+		   {
+			   system("cls");
+
+			   _ShowCurrencyCalculatorScreen();
+			   _GoBackToCurrenciesMenue();
+			   break;
+		   }
+		   case enCurrenciesMainMenueOptions::eMainMenue:
+		   {
+			   
+			   
+			   break;
+		   }
+
+		 }
+
+	 }
+
+ public:
+
+	 static void ShowCurrenciesMenue()
+	 {
+		  system("cls");
+		 _DrawScreenHeader("    Currancy Exhange Main Screen");
+
+		 cout << setw(37) << left << "" << "\033[38;5;208m" << "===========================================\n\033[0m\n";
+		 cout << setw(37) << left << "" << "\t\t\033[31m" << "Currency Exchange Menue\033[0m\n\n";
+		 cout << setw(37) << left << "" << "\033[38;5;208m" << "===========================================\n\033[0m\n";
+		 cout << setw(37) << left << "" << "\t\033[33m[1]" << "\033[0m" << " List Currencies.\n";
+		 cout << setw(37) << left << "" << "\t\033[33m[2]" << "\033[0m" << " Find Currency.\n";
+		 cout << setw(37) << left << "" << "\t\033[33m[3]" << "\033[0m" << " Updat Rate.\n";
+		 cout << setw(37) << left << "" << "\t\033[33m[4]" << "\033[0m" << " Currency Calculator.\n";
+		 cout << setw(37) << left << "" << "\t\033[33m[5]" << "\033[0m" << " Main Menue.\n\n";
+		 cout << setw(37) << left << "" << "\033[38;5;208m" << "===========================================\n\033[0m\n";
+
+		
+		 _PerformCurrenciesMainMenueOptions((enCurrenciesMainMenueOptions)ReadCurrenciesMainMenueOptions());
+
+	 }
+
+};
+
+
+#pragma warning(disable:4996)
+#pragma once
+#include <iostream>
+#include<string>
+#include<vector>
+#include"ClsString.h"
+using namespace std;
+
+
+class ClsDate
+{
+ private:
+	 short _day = 1;
+	 short _month = 1;
+	 short _year = 1900;
+
+ public:
+	 ClsDate()
+	 {
+		 time_t t = time(0);
+		 tm* now = localtime(&t);
+
+		 _day = now->tm_mday;
+		 _month = now->tm_mon + 1;
+		 _year = now->tm_year + 1900;
+	 }
+	 ClsDate(string sDate)
+	 {
+		 vector<string>VDate;
+		 VDate = ClsString::SplitString(sDate, "/");
+
+		 _day = stoi(VDate[0]);
+		 _month = stoi(VDate[1]);
+		 _year = stoi(VDate[2]);
+
+	 }
+	 ClsDate(short day,short month,short year)
+	 {
+		 _day = day;
+		 _month = month;
+		 _year = year;
+
+	 }
+	 ClsDate(short DateOrdeInYear,short year)
+	 {
+		 ClsDate date = GetDateFromDayOrderInYear(DateOrdeInYear, year);
+
+		 _day = date._day;
+		 _month = date._month;
+		 _year = date._year;
+
+
+
+	 }
+
+
+	 ClsDate GetDateFromDayOrderInYear(short orderDay, short year)
+	 {
+		 ClsDate date;
+		
+		 short DayMonth = 0;
+		 short remainder = orderDay;
+
+		 while (true)
+		 {
+			 DayMonth = NumberOfDayInTheMonth(year, date._month);
+			 if (DayMonth < remainder)
+			 {
+				 remainder -= DayMonth;
+				 date._month++;
+
+			 }
+			 else
+			 {
+				 date._day = remainder;
+				 break;
+			 }
+
+
+		 }
+
+		 return date;
+	 }
+
+	 static short NumberOfDayInTheMonth(short year, short month)
+	 {
+		 if (month < 1 || month>12)
+		 {
+			 return 0;
+		 }
+
+		 short NumberOfDay[13] = { 0,31,28,31,30,31,30,31,31,30,31,30,31 };
+
+		 return (month == 2) ? (IsLeapYear(year) ? 29 : 28) : NumberOfDay[month];
+
+
+	 }
+	 short NumberOfDayInTheMonth()
+	 {
+		 return NumberOfDayInTheMonth(_year, _month);
+	 }
+
+	 static bool IsLeapYear(short year)
+	 {
+		 return (year % 400 == 0) || ((year % 4 == 00) && (year % 100 != 00));
+	 }
+	 bool IsLeapYear()
+	 {
+		 return IsLeapYear(_year);
+	 }
+
+	 void SetDay(short day)
+	 {
+		 _day = day;
+	 }
+	 short Day()
+	 {
+		 return _day;
+	 }
+
+	 void SetMonth(short month)
+	 {
+		 _month = month;
+	 }
+	 short Month()
+	 {
+		 return _month;
+	 }
+
+	 void SetYear(short year)
+	 {
+		 _year = year;
+	 }
+	 short Year()
+	 {
+		 return _year;
+	 }
+
+	 __declspec(property(get=Day,put=SetDay))short day;
+	 __declspec(property(get = Month, put = SetMonth))short month;
+	 __declspec(property(get=Year,put=SetYear))short year;
+
+	 static string DateToString(ClsDate date)
+	 {
+		 return(to_string(date._day) + "/" + to_string(date._month) + "/"+to_string(date._year));
+	 }
+	 string DateToString()
+	 {
+		 return  DateToString(*this);
+	 }
+
+	 static string GetSystemDateTimeString()
+	 {
+		 time_t t = time(0);
+		 tm* now = localtime(&t);
+
+		 short Day, Month, Year, Hour, Minute, Second;
+
+		 Day = now->tm_mday;
+		 Month = now->tm_mon + 1;
+		 Year = now->tm_year + 1900;
+		 Hour = now->tm_hour;
+		 Minute = now->tm_min;
+		 Second = now->tm_sec;
+
+		 return(to_string(Day) + "/" + to_string(Month) + "/" + to_string(Year) + " - " + to_string(Hour) + ":" + to_string(Minute) + ":" + to_string(Second));
+
+	 }
+
+
+	 void Print()
+	 {
+		 cout << DateToString() << endl;
+	 }
+
+	 static ClsDate GetSystemDate()
+	 {
+		 ClsDate date;
+		 time_t t = time(0);
+		 tm* now = localtime(&t);
+
+		 date._day = now->tm_mday;
+		 date._month = now->tm_mon + 1;
+		 date._year = now->tm_year + 1900;
+
+		 return date;
+	 }
+
+	 static bool IsValidDate(ClsDate date)
+	 {
+		 if (date._year < 1)
+		 {
+			 return false;
+		 }
+		 if (date._day < 1 || date._day>31)
+		 {
+			 return false;
+		 }
+		 if (date._month==2)
+		 {
+			 if (IsLeapYear(date._year))
+			 {
+				 if (date._day > 29)
+					 return false;
+			 }
+			 else
+			 {
+				 if(date._day>28)
+					 return false;
+			 }
+
+		 }
+		 else
+		 {
+			 short DaysInMonth = NumberOfDayInTheMonth(date._year, date._month);
+			 if (date._day>DaysInMonth)
+			 {
+				 return false;
+			 }
+		 }
+		 
+		 
+		 
+
+	 }
+	 bool IsValidDate()
+	 {
+		 return IsValidDate(*this);
+	 }
+
+	 static string NameOfTheMonth(short Month)
+	 {
+		 string MonthName[] = { "","jan","fev","mar","avr","mai","jui","juil","aout","sep","oct","nov","dec" };
+
+		 return MonthName[Month];
+	 }
+	 string NameOfTheMonth()
+	 {
+		 return NameOfTheMonth(_month);
+	 }
+
+	 static short DayOrderOfWeek(short year, short Month, short Day)
+	 {
+
+
+		 short a, y, m;
+
+		 a = (14 - Month) / 12;
+		 y = year - a;
+		 m = Month + 12 * a - 2;
+
+		 return (Day + y + (y / 7) - (y / 100) + (y / 400) + ((31 * m) / 12)) % 7;
+
+
+	 }
+	 short DayOrderOfWeek()
+	 {
+		 return DayOrderOfWeek(_year, _month, _day);
+	 }
+	 static short DayOrderOfWeek(ClsDate dat)
+	 {
+		 return  DayOrderOfWeek(dat._year,dat._month,dat._day);
+	 }
+
+	 static void MonthCalendar(short year, short Month)
+	 {
+		 short NumberDayes = NumberOfDayInTheMonth(year, Month);
+		 short beginningOftheMonth = DayOrderOfWeek(year, Month, 1);
+
+		 printf("\n  ______________%s_________________\n\n", NameOfTheMonth(Month).c_str());
+
+		 printf("  Sun  Mon  Tue  Wed  Thu  Fri  Sat\n");
+		 int i;
+
+
+		 for (i = 0; i < beginningOftheMonth; i++)
+
+			 printf("     ");
+
+
+		 for (int j = 1; j <= NumberDayes; j++)
+		 {
+			 printf("%5d", j);
+
+
+			 if (i++ == 6)
+			 {
+				 cout << "\n";
+				 i = 0;
+
+			 }
+
+
+		 }
+		 printf("\n  __________________________________\n");
+
+
+	 }
+	 void MonthCalendar()
+	 {
+		 return MonthCalendar(_year, _month);
+	 }
+
+	 static void PrintYearCalendar(short year)
+	 {
+		 printf("\n  __________________________________\n");
+		 printf("            Calender -%d      ", year);
+		 printf("\n  __________________________________\n");
+
+		 for (int i = 1; i <= 12; i++)
+		 {
+			 MonthCalendar(year, i);
+
+
+		 }
+
+
+	 }
+	 void PrintYearCalendar()
+	 {
+		  PrintYearCalendar(_year);
+	 }
+
+	 static void SwapDates(ClsDate &date1,ClsDate &date2)
+	 {
+		 ClsDate swap;
+		 swap = date1;
+		 date1 = date2;
+		 date2 = swap;
+
+	 }
+	 void SwapDates( ClsDate& date2)
+	 {
+		 SwapDates(*this, date2);
+	 }
+
+	 static bool Is_Last_Month_In_Year(short Month)
+	 {
+		 return (Month == 12);
+
+	 }
+	 bool Is_Last_Month_In_Year()
+	 {
+		 return Is_Last_Month_In_Year(_month);
+	 }
+
+	 static bool Is_Last_Day_In_Month(ClsDate dat)
+	 {
+		 return (dat._day == NumberOfDayInTheMonth(dat._year, dat._month));
+
+	 }
+	 bool Is_Last_Day_In_Month()
+	 {
+		 return  Is_Last_Day_In_Month(*this);
+	 }
+
+
+	 static ClsDate IncreaseDatByOneDay(ClsDate dat)
+	 {
+		 if (Is_Last_Day_In_Month(dat))
+		 {
+			 if (Is_Last_Month_In_Year(dat._month))
+			 {
+				 dat._day = 1;
+				 dat._month = 1;
+				 dat._year++;
+
+			 }
+			 else
+			 {
+				 dat._day = 1;
+				 dat._month++;
+
+			 }
+
+		 }
+		 else
+		 {
+			 dat._day++;
+		 }
+
+		 return dat;
+	 }
+	 void IncreaseDatByOneDay()
+	 {
+		 *this = IncreaseDatByOneDay(*this);
+	 }
+
+	 static bool IsDate1BeforeDate2(ClsDate Dat1, ClsDate Dat2)
+	 {
+
+		 return (Dat1._year < Dat2._year) ? true : ((Dat1._year == Dat2._year) ? ((Dat1._month < Dat2._month) ? true : (Dat1._month == Dat2._month) ? (Dat1._day < Dat2._day) : false) : false);
+
+	 }
+	 bool IsDate1BeforeDate2( ClsDate Dat2)
+	 {
+		 return  IsDate1BeforeDate2(*this, Dat2);
+	 }
+
+
+	 static int GetDifferenceInDays(ClsDate dat1, ClsDate dat2, bool includingDay = false)
+	 {
+		 int NumberDay = 0;
+
+
+		 while (IsDate1BeforeDate2(dat1, dat2))
+		 {
+			 NumberDay++;
+			 dat1 = IncreaseDatByOneDay(dat1);
+		 }
+
+		 return includingDay ? ++NumberDay : NumberDay;
+	 }
+	 int GetDifferenceInDays( ClsDate dat2, bool includingDay = false)
+	 {
+		 return  GetDifferenceInDays(*this, dat2,includingDay);
+	 }
+
+	 static ClsDate IncreaseDatByOneWeek(ClsDate& Dat)
+	 {
+		 for (int i = 1; i <= 7; i++)
+		 {
+			 Dat = IncreaseDatByOneDay(Dat);
+
+		 }
+
+		 return Dat;
+
+	 }
+	 void IncreaseDatByOneWeek()
+	 {
+		  IncreaseDatByOneWeek(*this);
+	 }
+
+	 static ClsDate IncreaseDatByOneMonth(ClsDate &Dat)
+	 {
+		 if (Dat._month == 12)
+		 {
+			 Dat._month = 1;
+			 Dat._year++;
+
+		 }
+		 else
+		 {
+			 Dat._month++;
+
+		 }
+		 short NumberOfDayesInCurrentMonth = NumberOfDayInTheMonth(Dat._year, Dat._month);
+		 if (Dat._day > NumberOfDayesInCurrentMonth)
+		 {
+			 Dat._day = NumberOfDayesInCurrentMonth;
+		 }
+
+
+		 return Dat;
+	 }
+	 void IncreaseDatByOneMonth()
+	 {
+		 IncreaseDatByOneMonth(*this);
+	 }
+
+	 static bool IsEndOfWeek(ClsDate dat)
+	 {
+		 short OrderDay = DayOrderOfWeek(dat);
+
+		 return(OrderDay == 6);
+
+	 }
+	 bool IsEndOfWeek()
+	 {
+		 return  IsEndOfWeek(*this);
+	 }
+
+	 static bool IsWeekEnd(ClsDate dat)
+	 {
+		 short OrderDay = DayOrderOfWeek(dat);
+
+		 return(OrderDay == 5 || OrderDay == 6);
+
+	 }
+	 bool IsWeekEnd()
+	 {
+		 return IsWeekEnd(*this);
+	 }
+
+	 static bool IsBusinessDay(ClsDate dat)
+	 {
+		 return(!IsWeekEnd(dat));
+
+	 }
+	 bool IsBusinessDay()
+	 {
+		 return  IsBusinessDay(*this);
+	 }
+
+	 static short CulculatBusinessDayes(ClsDate dateFrom,ClsDate datTo)
+	 {
+		 short Dayes = 0;
+		 while (IsDate1BeforeDate2(dateFrom,datTo))
+		 {
+			 if (IsBusinessDay(dateFrom))
+			 {
+				 Dayes++;
+			 }
+			 dateFrom = IncreaseDatByOneDay(dateFrom);
+		 }
+		 return Dayes;
+	 }
+	 short CulculatBusinessDayes( ClsDate datTo)
+	 {
+		 return CulculatBusinessDayes(*this, datTo);
+	
+	 }
+
+	 static bool Check_If_Dat1_Equals_To_Dat2(ClsDate Dat1, ClsDate Dat2)
+	 {
+
+		 return (Dat1._year == Dat2._year) ? ((Dat1._month == Dat2._month) ? ((Dat1._day == Dat2._day) ? true : false) : false) : false;
+
+	 }
+	 bool Check_If_Dat1_Equals_To_Dat2(ClsDate Dat2)
+	 {
+		 return Check_If_Dat1_Equals_To_Dat2(*this, Dat2);
+	 }
+
+
+	 enum enComparDat { Befor = -1, Equal = 0, After = 1 };
+
+	 static enComparDat CompareDates(ClsDate dat1, ClsDate dat2)
+	 {
+		 if (ClsDate::IsDate1BeforeDate2(dat1, dat2))
+			 return enComparDat::Befor;
+
+		 if (ClsDate::Check_If_Dat1_Equals_To_Dat2(dat1, dat2))
+			 return enComparDat::Equal;
+
+		 return enComparDat::After;
+
+
+	 }
+	 enComparDat CompareDates( ClsDate dat2)
+	 {
+		 return  CompareDates(*this, dat2);
+	 }
+
+	 
+	static bool IsDat1AfterDat2(ClsDate Dat1, ClsDate Dat2)
+	 {
+		 return(!IsDate1BeforeDate2(Dat1, Dat2) && !Check_If_Dat1_Equals_To_Dat2(Dat1, Dat2));
+
+	 }
+	bool IsDat1AfterDat2( ClsDate Dat2)
+	{
+		return  IsDat1AfterDat2(*this, Dat2);
+	}
+
+
+
+
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"clsBankClient.h"
+#include"ClsInputValidate.h"
+using namespace std;
+
+
+
+
+
+
+class clsDeleteClientScreen:protected clsScreen
+{
+   private:
+
+	   static void _PrintClient(clsBankClient& Clint)
+	   {
+		
+
+
+
+
+		   cout << "\033[31m" << "\nClient Card:";
+		   cout << "\033[38;5;208m" << "\n==================================";
+		   cout << "\033[33m" << "\nFirstName     :" << "\033[0m" << Clint.FirtsName << endl;
+		   cout << "\033[33m" << "\nLastName      :" << "\033[0m" << Clint.LastName << endl;
+		   cout << "\033[33m" << "\nFullName      :" << "\033[0m" << Clint.FullName() << endl;
+		   cout << "\033[33m" << "\nEmail         :" << "\033[0m" << Clint.Email << endl;
+		   cout << "\033[33m" << "\nPhone         :" << "\033[0m" << Clint.Phone << endl;
+		   cout << "\033[33m" << "\nAccountNamber :" << "\033[0m" << Clint.GetAccountNamber() << endl;
+		   cout << "\033[33m" << "\nPassWord      :" << "\033[0m" << Clint.GetPinCod() << endl;
+		   cout << "\033[33m" << "\nBalanc        :" << "\033[0m" << Clint.GetAccuntBalanc() << endl;
+		   cout << "\033[38;5;208m" << "\n==================================\n" << "\033[0m";
+		   
+	   }
+
+
+   public:
+
+	   static void ShowDeleteClientScreen()
+	   {
+		   if (!CheckAccessRights(clsUser::enPermissions::pDeleteClient))
+		   {
+			   return;
+		   }
+
+		   _DrawScreenHeader("\tDelete Client Screen");
+		   string AccountNumber = "";
+
+		   cout << "\nPlease Enter Account Number: ";
+		   AccountNumber = ClsInputValidate::ReadString();
+
+		   while (!clsBankClient::IsClientExist(AccountNumber))
+		   {
+			   cout << "\nAccount number is not found, choose another one: ";
+			   AccountNumber = ClsInputValidate::ReadString();
+		   }
+
+		   clsBankClient Client1 = clsBankClient::Find(AccountNumber);
+		   _PrintClient(Client1);
+
+		   
+		   cout << "\033[31;1;5m" << "\nAre you sure you want to delete this client y/n ?"<<"\033[0m ";
+		   
+
+		   char Answer = 'n';
+		   cin >> Answer;
+
+		   if (Answer == 'y' || Answer == 'Y')
+		   {
+			   if (Client1.Delete())
+			   {
+				    cout << "\nClient Deleted Successfully :-)\n";
+				   _PrintClient(Client1);
+
+			   }
+			   else
+			   {
+				   cout << "\nError Client Was not Deleted\n";
+			   }
+
+		   }
+
+
+	   }
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"ClsInputValidate.h"
+using namespace std;
+
+
+class clsDeleteUserScreen:protected clsScreen
+{
+
+ private:
+	 static void _PrintUser(clsUser& User)
+	 {
+		
+
+		 cout << "\033[31m" << "\nClient Card:";
+		 cout << "\033[38;5;208m" << "\n==================================";
+		 cout << "\033[33m" << "\nFirstName   :" << "\033[0m" << User.FirtsName << endl;
+		 cout << "\033[33m" << "\nLastName    :" << "\033[0m" << User.LastName << endl;
+		 cout << "\033[33m" << "\nFullName    :" << "\033[0m" << User.FirtsName << endl;
+		 cout << "\033[33m" << "\nEmail       :" << "\033[0m" << User.Email << endl;
+		 cout << "\033[33m" << "\nPhone       :" << "\033[0m" << User.Phone << endl;
+		 cout << "\033[33m" << "\nUser Name   :" << "\033[0m" << User.UserName << endl;
+		 cout << "\033[33m" << "\nPassWord    :" << "\033[0m" << User.PassWord << endl;
+		 cout << "\033[33m" << "\nPermissions :" << "\033[0m" << User.Permissions << endl;
+		 cout << "\033[38;5;208m" << "\n==================================\n" << "\033[0m";
+
+	 }
+
+
+ public:
+	 static void ShowDeleteUserScreen()
+	 {
+		 _DrawScreenHeader("\tDelete User Screen");
+
+		 string UserName = "";
+
+		 cout << "\nPlease Enter UserName: ";
+
+		 UserName = ClsInputValidate::ReadString();
+
+		 while (!clsUser::IsUserExist(UserName))
+		 {
+			 cout << "\nUser is not found, choose another one: ";
+			 UserName = ClsInputValidate::ReadString();
+
+		 }
+
+		 clsUser User1 = clsUser::Find(UserName);
+		 _PrintUser(User1);
+
+		
+		 cout << "\033[31;1;5m" << "\nAre you sure you want to delete this User y/n ?" << "\033[0m ";
+		 char Answer = 'n';
+		 cin >> Answer;
+
+		 if (Answer=='y'||Answer=='Y')
+		 {
+			 if (User1.Delete())
+			 {
+				 cout << "\nUser Deleted Successfully :-)\n";
+				 _PrintUser(User1);
+
+			 }
+
+		 }
+		 else
+		 {
+			 cout << "\nError User Was not Deleted\n";
+
+		 }
+
+
+	 }
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"clsBankClient.h"
+#include"ClsInputValidate.h"
+using namespace std;
+
+
+class clsDepositScreen:protected clsScreen
+{
+  private:
+	  static string _ReadAccountNumbe()
+	  {
+		  string AccounNumber;
+		  cout << "\nPlease enter AccountNumber ? ";
+		  cin >> AccounNumber;
+		  return AccounNumber;
+
+	  }
+
+	  static void _PrintClient(clsBankClient& Clint)
+	  {
+		  cout << "\nClient Card:";
+		  cout << "\n---------------------------------";
+		  cout << "\nFirstName      :" << Clint.FirtsName << endl;
+		  cout << "\nLastName       :" << Clint.LastName << endl;
+		  cout << "\nFullName       :" << Clint.FullName() << endl;
+		  cout << "\nEmail          :" << Clint.Email << endl;
+		  cout << "\nPhone          :" << Clint.Phone << endl;
+		  cout << "\nAccountNember  :" << Clint.GetAccountNamber() << endl;
+		  cout << "\nPassWord       :" << Clint.PinCod << endl;
+		  cout << "\nBalance        :" << Clint.AccounBalanc << endl;
+		  cout << "\n---------------------------------\n";
+	  }
+
+  public:
+
+	  static void ShowDepositScreen()
+	  {
+		  _DrawScreenHeader("\t   Deposit Screen");
+
+		  string AccountNumber = _ReadAccountNumbe();
+
+
+		  while (!clsBankClient::IsClientExist(AccountNumber))
+		  {
+			  cout << "\nClient with [" << AccountNumber << "] does not exist.\n";
+			  AccountNumber = _ReadAccountNumbe();
+		  }
+
+		  clsBankClient Client1 = clsBankClient::Find(AccountNumber);
+		  _PrintClient(Client1);
+
+		  double Amount;
+		  cout << "\nPlease enter deposit amount? ";
+		  Amount = ClsInputValidate::ReadDblNumber();
+
+		  cout << "\nAre you sure you want to perform this transaction? ";
+		  char answer;
+		  cin >> answer;
+
+		  
+
+		  if (answer=='y'||answer=='Y')
+		  {
+			  Client1.Diposit(Amount);
+			  cout<<"\n\nAmount Deposited Successfully.\n";
+			  cout << "\nNew Balance Is: " << Client1.AccounBalanc;
+
+		  }
+		  else
+		  {
+			  cout << "\nOperation was cancelled";
+		  }
+
+
+	  }
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"ClsInputValidate.h"
+#include"clsBankClient.h"
+using namespace std;
+
+class clsFindClientScreen:protected clsScreen
+{
+ private:
+	 static void _PrintClient(clsBankClient& Clint)
+	 {
+		 cout << "\nClient Card:";
+		 cout << "\n---------------------------------";
+		 cout << "\nFirstName      :" << Clint.FirtsName << endl;
+		 cout << "\nLastName       :" << Clint.LastName << endl;
+		 cout << "\nFullName       :" << Clint.FullName() << endl;
+		 cout << "\nEmail          :" << Clint.Email << endl;
+		 cout << "\nPhone          :" << Clint.Phone << endl;
+		 cout << "\nAccountNember  :" << Clint.GetAccountNamber() << endl;
+		 cout << "\nPassWord       :" << Clint.PinCod << endl;
+		 cout << "\nBalance        :" << Clint.AccounBalanc << endl;
+		 cout << "\n---------------------------------\n";
+	 }
+
+ public:
+
+	 static void ShowFindClientScreen()
+	 {
+		 if (!CheckAccessRights(clsUser::enPermissions::pFindClient))
+		 {
+			 return;
+		 }
+
+		 clsScreen::_DrawScreenHeader("\t\tFind Clinet");
+
+		 string AccountNumber;
+		 cout <<"\nPlease Enter Account Number: " ;
+		 AccountNumber = ClsInputValidate::ReadString();
+
+		 while (!clsBankClient::IsClientExist(AccountNumber))
+		 {
+			 cout << "\nAccount number is not found, choose another one: ";
+			 AccountNumber = ClsInputValidate::ReadString();
+		 }
+
+		 clsBankClient Client1 = clsBankClient::Find(AccountNumber);
+
+		 if (!Client1.IsEmpty())
+		 {
+			 cout <<"\nClient Found :-)\n" ;
+		 }
+		 else
+		 {
+			 cout << "\nClient Was not Found :-(\n";
+		 }
+
+		 _PrintClient(Client1);
+	 }
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"clsCurrency.h"
+#include"ClsString.h"
+#include"ClsInputValidate.h"
+using namespace std;
+
+class clsFindCurrencyScreen:protected clsScreen
+{
+ private:
+
+	 static void _PrintCurrency(clsCurrency Currency)
+	 {
+		 cout << "\nCurrency Card:\n";
+		 cout << "_______________________________\n";
+		 cout << "\nCountry : " << Currency.Country();
+		 cout << "\nCode     :" << Currency.CurrencyCode();
+		 cout << "\nName     :" << Currency.CurrencyName();
+		 cout << "\nRate(1$) :" << Currency.Rate();
+		 cout << "\n_______________________________\n";
+
+	 }
+	 static void _ShowResults(clsCurrency Currency)
+	 {
+		 if (!Currency.IsEmpty())
+		 {
+			 cout << "\nCurrency Found :-)\n";
+			 _PrintCurrency(Currency);
+
+
+		 }
+		 else
+		 {
+			 cout << "\nCurrency Was not Found :-(\n";
+		 }
+
+	 }
+	
+
+ public:
+
+	 static void ShowFindCurrencyScreen()
+	 {
+		 _DrawScreenHeader("\t  Find Currency Screen");
+
+
+		 cout << "\nFind By: [1] Code or [2] Country ? ";
+		 short Answer=1;
+		 cin >> Answer;
+
+		 if (Answer==1)
+		 {
+			 cout << "\nPlease Enter CurrencyCode: ";
+
+			 string CurrencyCode = ClsInputValidate::ReadString();
+			 clsCurrency Currency = clsCurrency::FindByCode(CurrencyCode);
+			 _ShowResults(Currency);
+
+
+
+		 }
+		 else
+		 {
+			 cout << "\nPlease Enter Country Name: ";
+
+			 string Country = ClsInputValidate::ReadString();
+			 clsCurrency Currency = clsCurrency::FindByCountry(Country);
+			 _ShowResults(Currency);
+
+		 }
+
+		 
+	 }
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"clsUser.h"
+#include"ClsInputValidate.h"
+using namespace std;
+
+
+class clsFindUserScreen:protected clsScreen
+{
+ private:
+	 static void _PrintUser(clsUser& User)
+	 {
+		 cout << "\nClient Card:";
+		 cout << "\n---------------------------------";
+		 cout << "\nFirstName   :" << User.FirtsName << endl;
+		 cout << "\nLastName    :" << User.LastName << endl;
+		 cout << "\nFullName    :" << User.FirtsName << endl;
+		 cout << "\nEmail       :" << User.Email << endl;
+		 cout << "\nPhone       :" << User.Phone << endl;
+		 cout << "\nUser Name   :" << User.UserName << endl;
+		 cout << "\nPassWord    :" << User.PassWord << endl;
+		 cout << "\nPermissions :" << User.Permissions << endl;
+		 cout << "\n---------------------------------\n";
+
+	 }
+ public:
+
+	 static void ShowFindUserScreen()
+	 {
+		 _DrawScreenHeader("\t  Find User Screen");
+
+		 string UserName = "";
+		 cout << "\nPlease Enter UserName: ";
+
+		 UserName = ClsInputValidate::ReadString();
+
+		 while (!clsUser::IsUserExist(UserName))
+		 {
+			 cout << "\nUser is not found, choose another one: ";
+			 UserName = ClsInputValidate::ReadString();
+
+		 }
+		 clsUser User1 = clsUser::Find(UserName);
+
+		 if (!User1.IsEmpty())
+		 {
+			 cout << "\nUser Found :-)\n";
+		 }
+		 else
+		 {
+			 cout << "\nUser Was not Found :-(\n";
+			 
+
+		 }
+		 _PrintUser(User1);
+
+
+
+	 }
+};
+
+
+#pragma once
+#include<iostream>
+#include<string>
+#include<vector>
+#include"ClsData.h"
+using namespace std;
+
+
+class ClsInputValidate
+{
+  public:
+	  static bool IsNumberBetween(short number, short From, short To)
+	  {
+		  if (number >= From && number <= To)
+		  {
+			  return true;
+		  }
+
+		  else
+		  {
+			  return false;
+		  }
+
+	  }
+	  static bool IsNumberBetween(int number,int From,int To)
+	  {
+		  if (number>=From&&number<=To)
+		  {
+			  return true;
+		  }
+			  
+		  else
+		  {
+			  return false;
+		  }
+
+	  }
+	  static bool IsNumberBetween(float number, float From, float To)
+	  {
+		  if (number >= From && number <= To)
+		  {
+			  return true;
+		  }
+
+		  else
+		  {
+			  return false;
+		  }
+
+	  }
+	  static bool IsNumberBetween(double number, double From, double To)
+	  {
+		  if (number >= From && number <= To)
+		  {
+			  return true;
+		  }
+
+		  else
+		  {
+			  return false;
+		  }
+	  }
+	  static bool IsDateBetween(ClsDate number, ClsDate From, ClsDate To)
+	  {
+		  if ((ClsDate::IsDat1AfterDat2(number,From)||ClsDate::Check_If_Dat1_Equals_To_Dat2(number,From))
+			                                                    &&
+		     (ClsDate::IsDate1BeforeDate2(number,To)||ClsDate::Check_If_Dat1_Equals_To_Dat2(number,To))
+			  )
+		       {
+			     return true;
+		       }
+
+
+		  if ((ClsDate::IsDat1AfterDat2(number, To) || ClsDate::Check_If_Dat1_Equals_To_Dat2(number, To))
+			                                                    &&
+			  (ClsDate::IsDate1BeforeDate2(number, From) || ClsDate::Check_If_Dat1_Equals_To_Dat2(number, From))
+			  )
+		  {
+			  return true;
+		  }
+		  else
+		  {
+			  return false;
+		  }
+		 
+	  }
+
+	  static string ReadString()
+	  {
+		  string st;
+		  getline(cin >> ws, st);
+		  return st;
+	  }
+	  static int ReadIntNumber(string ErrorMessag="Invalid Number,Enter again:\n")
+	  {
+		  int number;
+		  while (!(cin>>number))
+		  {
+			  cin.clear();
+			  cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			  cout << ErrorMessag;
+
+		  }
+		  return number;
+	  }
+	  static double ReadDblNumber(string ErrorMessag = "Invalid Number,Enter again:\n")
+	  {
+		  double number;
+
+		  while (!(cin >> number))
+		  {
+
+			  cin.clear();
+			  cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			  cout << ErrorMessag;
+
+		  }
+
+		  return number;
+
+	  }
+
+	  static float ReadFloatNumber(string ErrorMessag = "Invalid Number,Enter again:\n")
+	  {
+		  float number;
+
+		  while (!(cin >> number))
+		  {
+
+			  cin.clear();
+			  cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			  cout << ErrorMessag;
+
+		  }
+
+		  return number;
+
+	  }
+
+
+	  static int ReadIntNumberBetween(int From,int To,string ErrorMessag="Number Is Not Within rang,enter again\n")
+	  {
+		  int number = ReadIntNumber();
+
+		  while (!IsNumberBetween(number,From,To))
+		  {
+			  cout << ErrorMessag;
+			  number = ReadIntNumber();
+			  
+
+		  }
+		  return number;
+	  }
+	  static double ReadDblNumberBetween(double From, double To, string ErrorMessag = "Number Is Not Within rang,enter again")
+	  {
+		  double number = ReadDblNumber();
+
+		  while (!IsNumberBetween(number,From,To))
+		  {
+			  cout << ErrorMessag << endl;
+			  number = ReadDblNumber();
+
+
+		  }
+		  return number;
+	  }
+
+	  static short ReadShortNumberBetween(short From, short To, string ErrorMessag = "Number Is Not Within rang,enter again")
+	  {
+		  short number = ReadDblNumber();
+
+		  while (!IsNumberBetween(number, From, To))
+		  {
+			  cout << ErrorMessag << endl;
+			  number = ReadDblNumber();
+
+
+		  }
+		  return number;
+	  }
+
+
+	  static bool IsValideDate(ClsDate date)
+	  {
+		 
+		  if (ClsDate::IsValidDate(date))
+			  return true;
+
+	  }
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsBankClient.h"
+#include"clsScreen.h"
+#include<iomanip>
+#include"clsUser.h"
+using namespace std;
+
+
+
+
+
+class clsClientListScreen:protected clsScreen
+{
+  private:
+	  static void PrintClientRecordLine(clsBankClient Client)
+	  {
+		  cout << setw(8) << left << "" <<"\033[38;5;208m" << "| " <<"\033[0m" << setw(15) << left << Client.GetAccountNamber();
+		  cout <<"\033[38;5;208m" << "| " <<"\033[0m" << setw(20) << left << Client.FullName();
+		  cout <<"\033[38;5;208m" << "| " <<"\033[0m" << setw(12) << left << Client.Phone;
+		  cout <<"\033[38;5;208m" << "| " <<"\033[0m" << setw(26) << left << Client.Email;
+		  cout <<"\033[38;5;208m" << "| " <<"\033[0m" << setw(10) << left << Client.PinCod;
+		  cout <<"\033[38;5;208m" << "| " <<"\033[0m" << setw(12) << left << Client.AccounBalanc;
+	  }
+
+
+  public:
+
+
+	  static void ShowClientsList()
+	  {
+		  if (!CheckAccessRights(clsUser::enPermissions::pListClients))
+		  {
+			  return;
+		  }
+
+		  vector<clsBankClient>vClients;
+		  vClients = clsBankClient::GetClientsList();
+
+		  string Title = "\t  Client List Screen";
+		  string SubTitle = "\t    (" + to_string(vClients.size()) + ") Client(s).";
+
+		  clsScreen::_DrawScreenHeader(Title,SubTitle);
+
+	
+
+		  cout << setw(8) << "\033[38;5;208m" << left << "" << "\n\t========================================================================================================\n";
+
+
+		  cout << setw(8) << left << "" << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(15) << "Accout Number";
+		  cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(20) << "Client Name";
+		  cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(12) << "Phone";
+		  cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(26) << "Email";
+		  cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(10) << "Pin Code";
+		  cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(12) << "Balance ";
+		  cout << setw(8) << left << "" << "\033[38;5;208m" << "\t========================================================================================================" << "\033[0m" << endl;
+
+	
+
+		  if (vClients.size()==0)
+		  {
+			  cout << "\t\t\t\tNo Clients Available In the System!";
+		  }
+		  else
+		  {
+			  for (clsBankClient &C:vClients)
+			  {
+				  PrintClientRecordLine(C);
+				  cout << endl;
+
+			  }
+		  }
+		  cout << setw(8) << "\033[38;5;208m" << left << "" << "\t========================================================================================================\n" << "\033[0m" << endl;
+		  
+		 
+		
+
+		 
+
+
+	  }
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"ClsString.h"
+#include"clsUser.h"
+#include"ClsInputValidate.h"
+#include<fstream>
+
+using namespace std;
+
+class clsLoginRegisterScreen:clsScreen
+{
+ private:
+
+	
+
+	 static void _PrintLoginRegisterRecordLine( clsUser::stLoginRegisterRecord LoginRegisterRecord)
+	 {
+		 
+
+		 
+
+		 cout << setw(8) << left << "" <<"\033[38;5;208m" << "| "<<"\033[0m" << setw(35) << left << LoginRegisterRecord.DateTime;
+		 cout <<"\033[38;5;208m" << "| "<<"\033[0m" << setw(20) << left << LoginRegisterRecord.UserName;
+		 cout <<"\033[38;5;208m" << "| "<<"\033[0m" << setw(20) << left << LoginRegisterRecord.Password;
+		 cout <<"\033[38;5;208m" << "| "<<"\033[0m" << setw(10) << left << LoginRegisterRecord.Permissions;
+
+		 
+
+
+	 }
+
+ public:
+
+	 static void ShowLoginRegisterScreen()
+	 {
+		 if (!CheckAccessRights(clsUser::pShowLogInRegister))
+		 {
+			 return;
+		 }
+		 vector<clsUser::stLoginRegisterRecord>vLoginRegisterRecord = clsUser::GetLoginRegisterList();
+
+		 string Title = "\tLogin Register List Screen";
+		 string SubTitle = "\t\t(" + to_string(vLoginRegisterRecord.size()) + ") Record(s).";
+		 _DrawScreenHeader(Title, SubTitle);
+
+	
+
+		 cout << setw(8) << left << "" << "\033[38;5;208m" << "\n\t________________________________________________________________________________________________\033[0m" << endl;
+		 
+
+		 cout << setw(8) << left << "" << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(35) << "Date/Time";
+		 cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(20) << "UserName";
+		 cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(20) << "Password";
+		 cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(10) << "Permissions";
+		 cout << setw(8) << left << "" << "\033[38;5;208m" << "\n\t________________________________________________________________________________________________\033[0m" << endl;
+         
+
+		
+
+
+		 if (vLoginRegisterRecord.size()==0)
+		 {
+			 cout << "\t\t\t\t\tNo login was recorded in the system.";
+		 }
+		 else
+		 {
+			 for (clsUser::stLoginRegisterRecord Record: vLoginRegisterRecord)
+			 {
+				 _PrintLoginRegisterRecordLine(Record);
+				 cout << "\n";
+
+			 }
+
+		 }
+		 cout << setw(8) << left << "" <<"\033[38;5;208m"<< "\n\t________________________________________________________________________________________________\n" << "\033[0m";
+		
+
+		 
+
+
+
+		 
+
+	 }
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"clsUser.h"
+#include"clsMainScreen.h"
+using namespace std;
+
+
+class clsLoginScreen:protected clsScreen
+{
+ private:
+
+	 static bool _Login()
+	 {
+		 bool LoginFaild = false;
+		 short FaildLoginCount = 0;
+		 
+
+		 string Username, Password;
+		 
+
+		 do
+		 {
+			 if (LoginFaild)
+			 {
+				 FaildLoginCount++;
+
+				 cout << "\n\t\t\t\t\t"<< "\033[38;5;208m" <<"Invlaid Username / Password!";
+				 cout << "\n\t\t\t\t\tYou have " << (3-FaildLoginCount) << " trial(s) to login.\n\n"<< "\033[0m" ;
+				
+
+			 }
+
+			 if (FaildLoginCount == 3)
+			 {
+				 cout << "\n\t\t\t\t\t"<< "\033[31;6;1m" <<"You are locked after 3 faile trials.\n\n"<< "\033[0m";
+				 return false;
+
+			 }
+
+			 cout   << "\n\t\t\t\t\t"<<"Enter Username ? ";
+			 cin >> Username;
+
+			 cout << "\t\t\t\t\t" << "Enter Password? ";
+			 cin >> Password;
+
+			 CurrentUser = clsUser::Find(Username, Password);
+
+			 LoginFaild = CurrentUser.IsEmpty();
+
+			 
+		 } while (LoginFaild);
+		 CurrentUser.RegisterLogIn();
+
+		 clsMainScreen::ShowMainMenue();
+		 return true;
+	 }
+
+	 
+	 
+	 
+
+ public:
+	 static bool ShowLoginScreen()
+	 {
+		 system("cls");
+		 _DrawScreenHeader("\t  Login Screen");
+		return _Login();
+		 
+	 }
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"ClsInputValidate.h"
+#include"clsListClientsScreen.h"
+#include"clsAddNewClientScreen.h"
+#include"clsDeleteClientScreen.h"
+#include"clsUpdateClientScreen.h"
+#include"clsFindClientScreen.h"
+#include"clsTransactionsScreen.h"
+#include"clsManageUsers.h"
+#include"clsLoginRegisterScreen.h"
+#include"clsCurrencyExchangeMainScreen.h"
+#include"Global.h"
+#include<iomanip>
+using namespace std;
+
+class clsMainScreen:protected clsScreen
+{
+  private:
+
+   static enum  enMainMenueOptions{ eListClients=1,eAddNewClient=2, eDeleteClient, eUpdateClient, eFindClient, eShowTransactionsMenue, eManageUsers,eLoginRegister,eCurrncyExchange, eExit};
+
+   static short _ReadMainMenueOption()
+   {
+	   short number;
+	   cout << "\n\t\t\t\t\tChoose What do you want to do [1 to 10] ?";
+	   number = ClsInputValidate::ReadShortNumberBetween(1, 10);
+	   return number;
+
+   }
+   static void _GoBackToMainMenue()
+   {
+	   cout << "\n\n\tPress any button to return to the main menu...";
+	   system("pause>0");
+	   ShowMainMenue();
+
+
+   }
+
+   static void  _ShowAllClientsScreen()
+   {
+	   clsClientListScreen::ShowClientsList();
+
+   }
+   static void _ShowAddNewClientsScreen()
+   {
+	  // cout << "Show New Clinet Will be her...";
+	   clsAddNewClientScreen::ShowAddNewClientScreen();
+   }
+   static void _ShowDeleteClientScreen()
+   {
+	   //cout << "Show Deletd Clinet Will be her...";
+	   clsDeleteClientScreen::ShowDeleteClientScreen();
+   }
+   static void _ShowUpdateClientScreen()
+   {
+	   //cout << "Show Updat Clinet Will be her...";
+	   clsUpdateClientScreen::ShowUpdateClientScreen();
+   }
+   static void _ShowFindClientScreen()
+   {
+	   //cout << "Show Find Clinet Will be her...";
+	   clsFindClientScreen::ShowFindClientScreen();
+   }
+   static void _ShowTransactionsMenue()
+   {
+	   //cout << "Show Transaction will be her...";
+	   clsTransactionsScreen::ShowTransactionsMenue();
+   }
+   static void _ShowManageUsersMenue()
+   {
+	  // cout << "Show Manag Users will be her...";
+	   clsManageUsers::ShowManageUsersMenue();
+   }
+
+   static void _ShowLoginRegisterScreen()
+   {
+	   clsLoginRegisterScreen::ShowLoginRegisterScreen();
+	   
+   }
+   static void _ShowCurrencyExchangeMainScreen()
+   {
+	   clsCurrencyExchangeMainScreen::ShowCurrenciesMenue();
+
+   }
+
+ 
+   static void _Logout()
+   {
+	   CurrentUser = clsUser::Find("","");
+	   
+
+
+   }
+
+   static void _PerfromMainMenueOption(enMainMenueOptions MainMenueOption)
+   {
+	   switch (MainMenueOption)
+	   {
+	     case enMainMenueOptions::eListClients:
+	     {
+			 system("cls");
+			 _ShowAllClientsScreen();
+			 _GoBackToMainMenue();
+			 break;
+	     }
+		 case enMainMenueOptions::eAddNewClient:
+		 {
+			 system("cls");
+			 _ShowAddNewClientsScreen();
+			 _GoBackToMainMenue();
+			 break;
+		 }
+		 case enMainMenueOptions ::eDeleteClient:
+		 {
+			 system("cls");
+			 _ShowDeleteClientScreen();
+			 _GoBackToMainMenue();
+			 break;
+		 }
+		 case enMainMenueOptions::eUpdateClient:
+		 {
+			 system("cls");
+			 _ShowUpdateClientScreen();
+			 _GoBackToMainMenue();
+			 break;
+		 }
+		 case enMainMenueOptions::eFindClient:
+		 {
+			 system("cls");
+			 _ShowFindClientScreen();
+			 _GoBackToMainMenue();
+			 break;
+		 }
+		 case enMainMenueOptions::eShowTransactionsMenue:
+		 {
+			 system("cls");
+			 _ShowTransactionsMenue();
+			 _GoBackToMainMenue();
+			 break;
+		 }
+		 case enMainMenueOptions::eManageUsers:
+		 {
+			 system("cls");
+			 _ShowManageUsersMenue();
+			 _GoBackToMainMenue();
+			 break;
+		 }
+
+		 case enMainMenueOptions::eLoginRegister:
+		 {
+			 system("cls");
+			 _ShowLoginRegisterScreen();
+			 _GoBackToMainMenue();
+			 break;
+		 }
+		 case enMainMenueOptions::eCurrncyExchange:
+		 {
+			 system("cls");
+			 _ShowCurrencyExchangeMainScreen();
+			 _GoBackToMainMenue();
+			 break;
+		 }
+
+		
+		 case enMainMenueOptions::eExit:
+		 {
+			 system("cls");
+			// _GoBackToMainMenue();
+			 _Logout();
+			 break;
+		 }
+
+
+
+	   }
+   }
+
+
+
+  public:
+
+	  static void ShowMainMenue()
+	  {
+		  system("cls");
+		  _DrawScreenHeader("\t\tMain Screen");
+		  cout << setw(37) << left << "" << "\033[38;5;208m" << "=========================================== \033[0m\n";
+		  cout << setw(37) << left << "" << "\t\t\t\033[31m" << "Main Menue\n\033[0m";
+		  cout << setw(37) << left << "" << "\033[38;5;208m" << "=========================================== \033[0m\n";
+		  cout << setw(37) << left << "" << "\t\033[33m" << "[1]\033[0m" << "   Show Client List.\n";
+		  cout << setw(37) << left << "" << "\t\033[33m" << "[2]\033[0m" << "   Add New Client.\n";
+		  cout << setw(37) << left << "" << "\t\033[33m" << "[3]\033[0m" << "   Delete Client.\n";
+		  cout << setw(37) << left << "" << "\t\033[33m" << "[4]\033[0m" << "   Update Client Info.\n";
+		  cout << setw(37) << left << "" << "\t\033[33m" << "[5]\033[0m" << "   Find Client.\n";
+		  cout << setw(37) << left << "" << "\t\033[33m" << "[6]\033[0m" << "   Transactions.\n";
+		  cout << setw(37) << left << "" << "\t\033[33m" << "[7]\033[0m" << "   Manage Users.\n";
+		  cout << setw(37) << left << "" << "\t\033[33m" << "[8]\033[0m" << "   Login Register.\n";
+		  cout << setw(37) << left << "" << "\t\033[33m" << "[9]\033[0m" << "   Currency Exchange.\n";
+		  cout << setw(37) << left << "" << "\t\033[33m" << "[10]\033[0m" << "  Logout.\n";
+		  cout << setw(37) << left << "" << "\033[38;5;208m" << "=========================================== \033[0m\n";
+		 
+		
+
+		  _PerfromMainMenueOption((enMainMenueOptions)_ReadMainMenueOption());
+
+		  
+		  
+
+	  }
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"ClsInputValidate.h"
+#include"clsUser.h"
+#include<iomanip>
+#include"clsUsersListScreen.h"
+#include"clsAddNewUserScreen.h"
+#include"clsDeleteUserScreen.h"
+#include"clsUpdateUserScreen.h"
+#include"clsFindUserScreen.h"
+using namespace std;
+
+class clsManageUsers:protected clsScreen
+{
+  private:
+	  enum enManagerUserOption{eListUsers=1,eAddNewUser=2,eDeleteUser,eUpdateUser,eFindUser,eMainMenue};
+
+	  static short ReadManageUsersMenueOption()
+	  {
+		  cout << setw(37) << left << "" << "Choose what you want to do ? [1 to 6]";
+		  short Number = ClsInputValidate::ReadShortNumberBetween(1, 6);
+		  return Number;
+	  }
+
+	  static void _ShowListUsersScreen()
+	  {
+		  //cout << " List User Screen Will be her..";
+		  clsUsersListScreen::ShowUsersList();
+	  }
+	  static void _ShowAddNewUserScreen()
+	  {
+		  //cout << "Add User Screen Will be her..";
+		  clsAddNewUserScreen::ShowAddNewUserScreen();
+	  }
+	  static void _ShowDeleteUserScreen()
+	  {
+		  //cout << " Delete  User Screen Will be her..";
+		  clsDeleteUserScreen::ShowDeleteUserScreen();
+	  }
+	  static void _ShowUpdateUserScreen()
+	  {
+		  //cout << " Update User Screen Will be her..";
+		  clsUpdateUserScreen::ShowUpdateUserScreen();
+	  }
+	  static void _ShowFindUserScreen()
+	  {
+		  //cout << " Find User Screen Will be her..";
+		  clsFindUserScreen::ShowFindUserScreen();
+	  }
+
+	  static void _GoBackToManageUsersMenue()
+	  {
+		  cout << "\n\nPress any key to go back to Manage Users Menue...";
+		  system("pause>0");
+		  ShowManageUsersMenue();
+	  }
+
+	  static void _PerformManageUsersMenueOption(enManagerUserOption ManageUsersMenueOption)
+	  {
+		  switch (ManageUsersMenueOption)
+		  {
+		    case enManagerUserOption::eListUsers:
+		    {
+				system("cls");
+				_ShowListUsersScreen();
+				_GoBackToManageUsersMenue();
+
+			   break;
+		    }
+			case enManagerUserOption::eAddNewUser:
+			{
+				system("cls");
+				_ShowAddNewUserScreen();
+				_GoBackToManageUsersMenue();
+				break;
+			}
+			case enManagerUserOption::eDeleteUser:
+			{
+				system("cls");
+				_ShowDeleteUserScreen();
+				_GoBackToManageUsersMenue();
+				break;
+			}
+			case enManagerUserOption::eUpdateUser:
+			{
+				system("cls");
+				_ShowUpdateUserScreen();
+				_GoBackToManageUsersMenue();
+				break;
+			}
+			case enManagerUserOption::eFindUser:
+			{
+				system("cls");
+				_ShowFindUserScreen();
+				_GoBackToManageUsersMenue();
+				break;
+			}
+			case enManagerUserOption::eMainMenue:
+			{
+				
+				break;
+			}
+
+		  }
+
+	  }
+
+  public:
+
+	  static void ShowManageUsersMenue()
+	  {
+		  if (!CheckAccessRights(clsUser::enPermissions::pManageUsers))
+		  {
+			  return;
+		  }
+
+		   system("cls");
+		  _DrawScreenHeader("\t   Manager Users Screen");
+
+		
+
+		  cout << setw(37) << left << "" << "\033[38;5;208m" << "============================================\n";
+		  cout << setw(37) << left << "" << "\033[33m" << " [1]" << "\033[0m" << " List Users.\n";
+		  cout << setw(37) << left << "" << "\033[33m" << " [2]" << "\033[0m" << " Add New User.\n";
+		  cout << setw(37) << left << "" << "\033[33m" << " [3]" << "\033[0m" << " Delete User.\n";
+		  cout << setw(37) << left << "" << "\033[33m" << " [4]" << "\033[0m" << " Update Users.\n";
+		  cout << setw(37) << left << "" << "\033[33m" << " [5]" << "\033[0m" << " Find Users.\n";
+		  cout << setw(37) << left << "" << "\033[33m" << " [6]" << "\033[0m" << " Main Menue.\n";
+		  cout << setw(37) << left << "" << "\033[38;5;208m" << "============================================\n" << "\033[0m";
+
+		  _PerformManageUsersMenueOption((enManagerUserOption)ReadManageUsersMenueOption());
+
+
+
+	  }
+};
+
+
+#pragma warning(disable:4996)
+#pragma once
+#include <iostream>
+#include<string>
+#include"ClsString.h"
+#include"ClsData.h"
+
+
+class ClsPeriod
+{
+public:
+	ClsDate StarDate;
+	ClsDate EndDate;
+
+	ClsPeriod(ClsDate StarDate,ClsDate EndDate)
+	{
+		this->StarDate = StarDate;
+		this->EndDate = EndDate;
+
+
+	}
+
+
+
+	static bool IsOverLapPeriods(ClsPeriod Period1, ClsPeriod  Periode2)
+	{
+		if ((ClsDate::CompareDates(Period1.EndDate, Periode2.StarDate) == ClsDate::enComparDat::Befor) || (ClsDate::CompareDates(Period1.StarDate, Periode2.EndDate) == ClsDate::enComparDat::After))
+			return false;
+		return true;
+
+	}
+	bool IsOverLapPeriods( ClsPeriod  Periode2)
+	{
+		return   IsOverLapPeriods(*this,  Periode2);
+	}
+
+	static bool IsDatWithinPeriod(ClsPeriod Period, ClsDate Dat)
+	{
+		return!((ClsDate::CompareDates(Dat, Period.StarDate) == ClsDate::enComparDat::Befor) || (ClsDate::CompareDates(Dat, Period.EndDate) == ClsDate::enComparDat::After));
+
+	}
+	bool IsDatWithinPeriod( ClsDate Dat)
+	{
+		return  IsDatWithinPeriod(*this, Dat);
+	}
+
+
+	void print()
+	{
+		cout << "Period Star:\n";
+		StarDate.Print();
+		cout << "\nPeriod End:\n";
+		EndDate.Print();
+	}
+
+
+
+
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include<string>
+using namespace std;
+
+
+
+
+class clsPerson
+{
+private:
+	string _FirstName;
+	string _LastName;
+	string _Email;
+	string _Phone;
+
+public:
+
+	clsPerson(string FirstName, string LastName, string Email, string Phone)
+	{
+		_FirstName = FirstName;
+		_LastName = LastName;
+		_Email = Email;
+		_Phone = Phone;
+
+	}
+
+
+
+	void SetFirstName(string firsName)
+	{
+		_FirstName = firsName;
+
+	}
+	string GetFirstName()
+	{
+		return _FirstName;
+	}
+	__declspec(property(get = GetFirstName, put = SetFirstName))string FirtsName;
+
+	void SetLastName(string LastName)
+	{
+		_LastName = LastName;
+
+	}
+	string GetLastName()
+	{
+		return _LastName;
+	}
+	__declspec(property(get = GetLastName, put = SetLastName))string LastName;
+
+	string FullName()
+	{
+		return(_FirstName + " " + _LastName);
+	}
+
+	void SetEmail(string Email)
+	{
+		_Email = Email;
+
+	}
+	string GetEmail()
+	{
+		return _Email;
+	}
+	__declspec(property(get = GetEmail, put = SetEmail))string Email;
+
+	void SetPhone(string phone)
+	{
+		_Phone = phone;
+
+	}
+	string GetPhone()
+	{
+		return _Phone;
+	}
+	__declspec(property(get = GetPhone, put = SetPhone))string Phone;
+
+	void Print()
+	{
+		cout << "             Info:                 ";
+		cout << "\n---------------------------------";
+		cout << "\nFirstName      :" << FirtsName << endl;
+		cout << "\nLastName       :" << LastName << endl;
+		cout << "\nFullName       :" << FullName() << endl;
+		cout << "\nEmail          :" << Email << endl;
+		cout << "\nPhone          :" << Phone << endl;
+		cout << "\n---------------------------------\n";
+	}
+
+};
+#pragma once
+#pragma warning(disable:4996)
+#include<iostream>
+#include<string>
+#include"clsUser.h"
+#include"Global.h"
+#include"ClsData.h"
+#include<ctime>
+using namespace std;
+
+class clsScreen
+{
+  protected:
+
+      static void _DrawScreenHeader(string title, string subtitle = "")
+      {
+          cout << "\t\t\t\t     ===========================================";
+          cout << "\n\t\t\t\t\t  " << title;
+          if (subtitle != "")
+          {
+              cout << "\n\t\t\t\t\t  " << subtitle;
+          }
+          cout << "\n\t\t\t\t     ===========================================\n\n";
+          cout << "\033[32m" << "\n\t\t\t\t\tUser: " << CurrentUser.UserName << "\n";
+          cout  << "\t\t\t\t\tDate: " << ClsDate::DateToString(ClsDate());
+          cout << "\033[0m" << "\n\n";
+          
+     
+      }
+
+      
+  
+      static bool CheckAccessRights(clsUser::enPermissions Permissions)
+      {
+          if (!CurrentUser.CheckAccessPermission(Permissions))
+          {
+              cout << "\t\t\t\t\t" << "\033[38;5;208m" << "=====================================";
+              cout << "\n\t\t\t\t\t" << "\033[31;6m" << " Access Denied! Contact your Admin." << "\033[0m";
+              cout << "\n\t\t\t\t\t" << "\033[38;5;208m" << "=====================================\033[0m \n\n";
+
+              return false;
+
+          }
+
+          return true;
+      }
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include<string>
+#include<vector>
+using namespace std;
+
+
+
+class ClsString
+{
+  private:
+	  string _Value;
+  public:
+	  ClsString()
+	  {
+		  _Value = "";
+
+	  }
+	  ClsString(string Value)
+	  {
+		  _Value = Value;
+	  }
+
+	  void SetValue(string Value)
+	  {
+		  _Value = Value;
+	  }
+	  string GetValue()
+	  {
+		  return _Value;
+	  }
+
+	  __declspec(property(get = GetValue, put = SetValue))string Value;
+
+	  static int CountWord(string Text)
+	  {
+		  string separation = " ";
+		  string Word;
+		  int counter = 0;
+		  int pos = 0;
+
+		  while ((pos=Text.find(separation))!=string::npos)
+		  {
+			  Word = Text.substr(0, pos);
+
+			  if (Word!="")
+			  {
+				  counter++;
+			  }
+
+			  Text.erase(0, pos + separation.length());
+		  }
+		  if (Text!="")
+		  {
+			  counter++;
+		  }
+		  return counter;
+	  }  
+	  int CountWord()
+	  {
+		 return CountWord(_Value);
+	  }
+
+	  static string ReadString()
+	  {
+		  string st;
+		  getline(cin >> ws, st);
+		  return st;
+	  }
+
+	  static void PrintFristLaterOfEachWord(string Text)
+	  {
+		  bool isFirstLater = true;
+
+		  for (int i=0;i<Text.length();i++)
+		  {
+			  if (Text[i]!= ' ' && isFirstLater)
+			  {
+				  cout << Text[i] << endl;
+			  }
+			  isFirstLater = (Text[i] == ' ' ? true : false);
+
+		  }
+	  }
+	  void PrintFristLaterOfEachWord()
+	  {
+		  PrintFristLaterOfEachWord(_Value);
+	  }
+
+	 static string ConvertTheFirstLettersOfEachWordToUppercase(string Text)
+	 {
+		 bool isFirstLater = true;
+
+		 for (int i = 0; i < Text.length(); i++)
+		 {
+			 if (Text[i] != ' ' && isFirstLater)
+			 {
+				 Text[i] = toupper(Text[i]);
+			 }
+			 isFirstLater = (Text[i] == ' ' ? true : false);
+
+		 }
+		 return Text;
+	 }
+	 string ConvertTheFirstLettersOfEachWordToUppercase()
+	 {
+		 return  ConvertTheFirstLettersOfEachWordToUppercase(_Value);
+	 }
+
+	 static  string ConvertTheFirstLettersOfEachWordToLowerCase(string Text)
+	 {
+		 bool isFirstLater = true;
+
+		 for (int i = 0; i < Text.length(); i++)
+		 {
+			 if (Text[i] != ' ' && isFirstLater)
+			 {
+				 Text[i] = tolower(Text[i]);
+			 }
+			 isFirstLater = (Text[i] == ' ' ? true : false);
+
+		 }
+		 return Text;
+	 }
+	 string ConvertTheFirstLettersOfEachWordToLowerCase()
+	 {
+		 return  ConvertTheFirstLettersOfEachWordToLowerCase(_Value);
+	 }
+
+	 static  string LowerAllLetterOfString(string Text)
+	 {
+		 for (int i=0;i<Text.length();i++)
+		 {
+			 Text[i] = tolower(Text[i]);
+
+		 }
+		 return Text;
+	 }
+	 void LowerAllLetterOfString()
+	 {
+		 _Value= LowerAllLetterOfString(_Value);
+	 }
+
+	 static  string UpperAllLetterOfString(string Text)
+	 {
+		 for (int i = 0; i < Text.length(); i++)
+		 {
+			 Text[i] = toupper(Text[i]);
+
+		 }
+		 return Text;
+	 }
+	 void UpperAllLetterOfString()
+	 {
+		 _Value =  UpperAllLetterOfString(_Value);
+	 }
+
+	 static  int CountCharactInTheString(string Text,char Char,bool MatchCase=true)
+	 {
+		 int count = 0;
+
+		 for (int i=0;i<Text.length();i++)
+		 {
+			 if (MatchCase)
+			 {
+				 if (tolower(Text[i]) == tolower(Char))
+				 {
+					 count++;
+				 }
+			 }
+			 else
+			 {
+				 if (Text[i] == Char)
+				 {
+					 count++;
+				 }
+			 }
+		 }
+		 return count;
+	 }
+	 int CountCharactInTheString(char Char,bool MatchCase = true)
+	 {
+		 return  CountCharactInTheString(_Value, Char, MatchCase);
+	 }
+
+
+	static bool CheckIsCharactIsVowel(char Later)
+	 {
+		 return(tolower(Later)=='a' || tolower(Later) == 'e' || tolower(Later) == 'i' || tolower(Later) == 'o');
+		 
+	 }
+
+	 static int CountAllVowelsInTheString(string Text)
+	 {
+		 int count = 0;
+		 for (int i=0;i<Text.length();i++)
+		 {
+			 if (CheckIsCharactIsVowel(Text[i]))
+			 {
+				 count++;
+			 }
+
+		 }
+		 return count;
+	 }
+	 int CountAllVowelsInTheString()
+	 {
+		 return CountAllVowelsInTheString(_Value);
+	 }
+
+	 void PrinAllVowelInString(string Text)
+	 {
+		 
+		 for (int i=0;i<Text.length();i++)
+		 {
+			 if (CheckIsCharactIsVowel(tolower(Text[i])))
+			 {
+				 cout << Text[i] << " ";
+				 
+			 }
+
+		 }
+		 
+	 }
+	 void PrinAllVowelInString()
+	 {
+		return   PrinAllVowelInString(_Value);
+
+	 }
+
+	 void PrintEachWordInString(string Text)
+	 {
+		 string separation = " ";
+		 int pos = 0;
+		 string Word = "";
+
+		 while ((pos=Text.find(separation))!=string::npos)
+		 {
+			 Word = Text.substr(0, pos);
+			 if (Word!="")
+			 {
+				 cout << Word << endl;
+			 }
+
+			 Text.erase(0, pos + separation.length());
+		 }
+		 if (Text!="")
+		 {
+			 cout << Text << endl;
+		 }
+		 
+	 }
+	 void PrintEachWordInString()
+	 {
+		 PrintEachWordInString(_Value);
+	 }
+
+	 static  vector<string>SplitString(string Text,string separation)
+	 {
+		 vector<string>Words;
+		 int pos = 0;
+		 string word = "";
+
+		 while ((pos=Text.find(separation))!=string::npos)
+		 {
+			 word = Text.substr(0, pos);
+			 if (word!="")
+			 {
+				 Words.push_back(word);
+			 }
+
+			 Text.erase(0, pos + separation.length());
+		 }
+		 if (Text!="")
+		 {
+			 Words.push_back(Text);
+		 }
+		 return Words;
+	 }
+	 vector<string>SplitString( string separation)
+	 {
+		 return SplitString(_Value, separation);
+	 }
+
+	 static void PrintToken(vector<string>Text)
+	 {
+		 cout << "Token:" << Text.size() << endl;
+		 for (string Word:Text)
+		 {
+			 cout << Word << endl;
+		 }
+
+	 }
+	 void PrintToken(string separation)
+	 {
+
+		 PrintToken(SplitString(Value, separation));
+
+	 }
+
+	 string JoinString(string delim,vector<string>String)
+	 {
+		 string Text = "";
+
+		 for (string Word:String)
+		 {
+			 Text = Text + Word + delim;
+		 }
+		 return Text.substr(0, Text.length() - delim.length());
+
+	 }
+
+	 string Reverse_String(string del)
+	 {
+		 vector<string>Vstring = SplitString(del);
+		 string Text = "";
+
+		 vector<string>::iterator itr =  Vstring.end();
+		 while (itr!=Vstring.begin())
+		 {
+			 itr--;
+			 Text += *itr + del;
+		 }
+		 return Text.substr(0, Text.length() - del.length());
+		
+		 
+	 }
+
+	 static string Replace_wordeInString(string Text,string word,string NewWord)
+	 {
+		 short pos = 0;
+		 pos = Text.find(word);
+
+		 while (pos!=string::npos)
+		 {
+			 Text = Text.replace(pos, word.length(), NewWord);
+			 pos = Text.find(word);
+
+		 }
+		 return Text;
+
+
+	 }
+	 string Replace_wordeInString( string word, string NewWord)
+	 {
+		 return  Replace_wordeInString(_Value,  word,  NewWord);
+	 }
+
+	 static string Remove_Punctuations_in_string(string Text)
+	 {
+		 string St = "";
+		 for (int i = 0; i < Text.length(); i++)
+		 {
+			 if (!ispunct(Text[i]))
+			 {
+				 St += Text[i];
+			 }
+		 }
+		 return St;
+	 }
+	 string Remove_Punctuations_in_string()
+	 {
+		 return Remove_Punctuations_in_string(_Value);
+	 }
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include<iomanip>
+#include"clsBankClient.h";
+#include"clsUtil.h"
+using namespace std;
+
+
+class clsTotalBalancesScreen:protected clsScreen
+{
+ private:
+	 static void PrintClientRecordBalanceLine(clsBankClient Clinet)
+	 {
+
+		 cout << setw(25) << left << "" << "| " << left << setw(15) << Clinet.GetAccountNamber();
+		 cout << "| " << setw(40) << left << Clinet.FullName();
+		 cout << "| " << setw(12) << left << Clinet.AccounBalanc;
+		 cout << endl;
+
+	 }
+
+ public:
+	 static void ShowTotalBalances()
+	 {
+		 vector <clsBankClient>vClients = clsBankClient::GetClientsList();
+
+		 string Title = "\t  Balances List Screen";
+		 string SubTitle = "\t(" + to_string(vClients.size()) + ") Client(s).";
+
+		 _DrawScreenHeader(Title, SubTitle);
+
+		 cout << setw(25) << left << "" << "\n\t\t_______________________________________________________";
+		 cout << "__________________________\n" << endl;
+
+
+		 cout << setw(25) << left << "" << "| " << left << setw(15) << "Accout Number";
+		 cout << "| " << left << setw(40) << "Client Name";
+		 cout << "| " << left << setw(12) << "Balance";
+		 cout << setw(25) << left << "" << "\t\t_______________________________________________________";
+		 cout << "__________________________\n" << endl;
+
+		 double TotalBalances = clsBankClient::GetTotalBalances();
+
+		 if (vClients.size()==0)
+		 {
+			 cout << "\t\t\t\tNo Clients Available In the System!";
+		 }
+		 else
+		 {
+			 for (clsBankClient &Client:vClients)
+			 {
+				 PrintClientRecordBalanceLine(Client);
+			 }
+		 }
+		 cout << setw(25) << left << "" << "\n\t\t_______________________________________________________";
+		 cout << "__________________________\n" << endl;
+
+		 
+
+		 cout << setw(8) << left << "" << "\t\t\t\t\t\t\t     Total Balances = " << TotalBalances << endl;
+		 cout << setw(10) << left << "" << "\t\t\t\t\t\t\t  ( " << ClsUtil::NumberToText(TotalBalances) << ")";
+		 
+		 
+		 
+
+	 }
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"ClsInputValidate.h"
+#include<iomanip>
+#include"clsDepositScreen.h"
+#include"clsWithdrawScreen.h"
+#include"clsTotalBalancesScreen.h"
+#include"clsTransferScreen.h"
+#include"clsTransferLogScreen.h"
+
+
+
+
+using namespace std;
+
+class clsTransactionsScreen:protected clsScreen
+{
+  private:
+      enum enTransactionsMenueOptions{enDeposit=1,enWithdraw,eShowTotalBalance,eTransfer,eTransferLog,eShowMainMenue};
+
+
+      static short ReadTransactionsMenueOption()
+      {
+          short Choice;
+
+          cout << setw(37) << left << "" << "Choose what do you want to do? [1 to 6]? ";
+          Choice= ClsInputValidate::ReadShortNumberBetween(1, 6);
+
+          return Choice;
+
+      }
+
+      static void _ShowDepositScreen()
+      {
+         // cout << "Showe Deposit Screen Will be her..";
+          clsDepositScreen::ShowDepositScreen();
+      }
+      static void _ShowWithdrawScreen()
+      {
+         // cout << "Showe Withdraw Screen Will be her..";
+          clsWithdrawScreen::ShowWithdrawScreen();
+      }
+      static void _ShowTotalBalancesScreen()
+      {
+         // cout << "Showe Total Balancecs Screen Will be her..";
+          clsTotalBalancesScreen::ShowTotalBalances();
+          
+      }
+
+      static void _ShowTransferScreen()
+      {
+          // cout << "Showe Withdraw Screen Will be her..";
+          clsTransferScreen::ShowTransferScreen();
+          
+      }
+
+      static void _ShowTransferLogScreen()
+      {
+          // cout << "Showe Total Balancecs Screen Will be her..";
+          clsTransferLogScreen::ShowTransferLogScreen();
+          
+
+      }
+
+
+      static void _GoBackToTransactionsMenue()
+      {
+          cout << "\n\nPress any key to go back to Transactions Menue...";
+          system("pause>0");
+          ShowTransactionsMenue();
+      }
+
+
+      static void _PerformTransactionsMenueOption(enTransactionsMenueOptions TransactionsMenueOption)
+      {
+          switch (TransactionsMenueOption)
+          {
+            case enTransactionsMenueOptions::enDeposit:
+            {
+                 system("cls");
+                _ShowDepositScreen();
+                _GoBackToTransactionsMenue();
+
+                break;
+            }
+            case enTransactionsMenueOptions::enWithdraw:
+            {
+                 system("cls");
+                _ShowWithdrawScreen();
+                _GoBackToTransactionsMenue();
+
+                break;
+            }
+            case enTransactionsMenueOptions::eShowTotalBalance:
+            {
+                 system("cls");
+                _ShowTotalBalancesScreen();
+                _GoBackToTransactionsMenue();
+
+                break;
+            }
+            case enTransactionsMenueOptions::eTransfer:
+            {
+                 system("cls");
+                 _ShowTransferScreen();
+                _GoBackToTransactionsMenue();
+
+                break;
+            }
+            case enTransactionsMenueOptions::eTransferLog:
+            {
+                system("cls");
+                _ShowTransferLogScreen();
+                _GoBackToTransactionsMenue();
+
+                break;
+            }
+            case enTransactionsMenueOptions::eShowMainMenue:
+            {
+
+
+                break;
+            }
+
+          }
+
+      }
+
+
+  public:
+	  static void ShowTransactionsMenue()
+	  {
+          if (!CheckAccessRights(clsUser::enPermissions::pTranactions))
+          {
+              return;
+          }
+
+          system("cls");
+
+		  _DrawScreenHeader("\t  Transactions Screen");
+        
+
+          cout << "\n\n\n\n" << setw(37) << left << "" << "\033[38;5;208m" << "===========================================\n";
+          cout << setw(37) << left << "" << "\033[31m" << "\t\t  Transactions Menue\n";
+          cout << setw(37) << left << "" << "\033[38;5;208m" << "===========================================\n";
+          cout << setw(37) << left << "" << "\033[33m" << "\t[1]" << "\033[0m" << " Deposit.\n";
+          cout << setw(37) << left << "" << "\033[33m" << "\t[2]" << "\033[0m" << " Withdraw.\n";
+          cout << setw(37) << left << "" << "\033[33m" << "\t[3]" << "\033[0m" << " Total Balances.\n";
+          cout << setw(37) << left << "" << "\033[33m" << "\t[4]" << "\033[0m" << " Transfer.\n";
+          cout << setw(37) << left << "" << "\033[33m" << "\t[5]" << "\033[0m" << " Transfer Log.\n";
+          cout << setw(37) << left << "" << "\033[33m" << "\t[6]" << "\033[0m" << " Main Menue.\n";
+          cout << setw(37) << left << "" << "\033[38;5;208m" << "===========================================\n" << "\033[0m";
+
+          _PerformTransactionsMenueOption((enTransactionsMenueOptions)ReadTransactionsMenueOption());
+          
+
+	  }
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"clsBankClient.h"
+using namespace std;
+
+class clsTransferLogScreen :protected clsScreen
+{
+ private:
+     static void PrintTransferLogRecordLine(clsBankClient::stTrnsferLogRecord TransferLogRecord)
+     {
+         cout << setw(8) << left << "" << "| " << setw(24) << left << TransferLogRecord.DateTime;
+         cout << "| " << setw(8) << left << TransferLogRecord.SourceAccountNumber ;
+         cout << "| " << setw(8) << left << TransferLogRecord.DestinationAccountNumber ;
+         cout << "| " << setw(8) << left << TransferLogRecord.Amount ;
+         cout << "| " << setw(10) << left << TransferLogRecord.srcBalanceAfter ;
+         cout << "| " << setw(10) << left << TransferLogRecord.destBalanceAfter ;
+         cout << "| " << setw(8) << left << TransferLogRecord.UserName ;
+
+
+     }
+
+
+ public:
+
+	 static void ShowTransferLogScreen()
+	 {
+         vector<clsBankClient::stTrnsferLogRecord>vTransferLogRecord = clsBankClient::GetTransfersLogList();
+
+		 
+		 string Title = "\tTransfer Log List Screen";
+         string SubTitle = "\t    (" + to_string(vTransferLogRecord.size()) + ") Record(s).";
+		 _DrawScreenHeader(Title,SubTitle);
+
+
+
+
+         cout << setw(8) <<left<< "" << "\n\t_______________________________________________________";
+         cout << "_________________________________________\n" << endl;
+
+         cout << setw(8) <<left<<"" << "| " << setw(24) << left << "Date/Time";
+         cout << "| " << setw(8) << left << "s.Acct";
+         cout << "| " << setw(8) << left << "D.Acct";
+         cout << "| " << setw(8) << left << "Amount";
+         cout << "| " << setw(10) << left << "s.Balance";
+         cout << "| " << setw(10) << left << "d.Balance";
+         cout << "| " << setw(8) << left << "User";
+
+         cout << setw(8) << left << "" << "\n\t_______________________________________________________";
+         cout << "_________________________________________\n" << endl;
+        
+
+
+         if (vTransferLogRecord.size()==0)
+         {
+             cout << "\t\t\t\tNo Transfers Available In the System!";
+         }
+         else
+         {
+             for (clsBankClient::stTrnsferLogRecord &Record:vTransferLogRecord)
+             {
+                 PrintTransferLogRecordLine(Record);
+                 cout << endl;
+
+             }
+
+         }
+
+         cout << "\n" << setw(8) << left << "" << "__________________________________________________________";
+         cout << "________________________________________" << endl;
+
+
+
+	 }
+
+   
+     
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"ClsInputValidate.h"
+#include"clsBankClient.h"
+using namespace std;
+
+class clsTransferScreen:public clsScreen
+{
+ private:
+
+	 static void _PrintClient(clsBankClient Client)
+	 {
+		 cout << "\nClint Card:";
+		 cout << "\n___________________\n";
+		 cout << "\nFull Name   :" << Client.FullName();
+		 cout << "\nAcc.Number  :" << Client.GetAccountNamber();
+		 cout << "\nBalance     :" << Client.AccounBalanc;
+		 cout << "\n___________________\n";
+
+	 }
+
+	 static string _ReadAccountNumber(string Messag)
+	 {
+		 string AccountNumber;
+		 cout << "\nPlease Enter Account Number to Transfer� " << Messag << " :";
+		 AccountNumber = ClsInputValidate::ReadString();
+		 while (!clsBankClient::IsClientExist(AccountNumber))
+		 {
+			 cout << "\nAccount number is not found, choose another one: ";
+			 AccountNumber = ClsInputValidate::ReadString();
+		 }
+		 return AccountNumber;
+	 }
+
+	 static float ReadAmount(clsBankClient SourceClient)
+	 {
+		 float Amount;
+		 cout << "\nEnter Transfer Amount? ";
+
+		  Amount = ClsInputValidate::ReadFloatNumber();
+		 while (Amount>SourceClient.AccounBalanc)
+		 {
+			 cout << "\nAmount Exceeds the available Balance, Enter another Amount ? ";
+			  Amount = ClsInputValidate::ReadFloatNumber();
+		 }
+		 
+
+		 return Amount;
+		
+
+	 }
+
+ public:
+
+	 static void ShowTransferScreen()
+	 {
+		 _DrawScreenHeader("\tTransfer Screen");
+
+		 clsBankClient SourceClient = clsBankClient::Find(_ReadAccountNumber("From"));
+		 _PrintClient(SourceClient);
+
+		 clsBankClient DestinationClient = clsBankClient::Find(_ReadAccountNumber("To"));
+		 _PrintClient(DestinationClient);
+
+		 float Amount = ReadAmount(SourceClient);
+
+
+		 
+		 cout << "\nAre you sure you want to perform this operation? y/n? ";
+		 char Answer = 'n';
+		 cin >> Answer;
+
+		 if (Answer=='y'||Answer=='Y')
+		 {
+			 if (SourceClient.Transfer(Amount, DestinationClient,CurrentUser.UserName))
+			 {
+				 cout << "\nTransfer done successfully\n";
+				 
+			 }
+			
+
+		 }
+		 else
+		 {
+			 
+		 }
+
+		
+		
+		 _PrintClient(SourceClient);
+		 _PrintClient(DestinationClient);
+
+
+	 }
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"clsBankClient.h"
+#include"ClsInputValidate.h"
+using namespace std;
+
+
+
+class clsUpdateClientScreen:protected clsScreen
+{
+  private:
+	  static void _ReadClientInfo(clsBankClient& Client)
+	  {
+		  cout << "\nEnter FirstName: ";
+
+		  Client.FirtsName = ClsInputValidate::ReadString();
+
+		  cout << "\nEnter LastName: ";
+		  Client.LastName = ClsInputValidate::ReadString();
+
+		  cout << "\nEnter Email: ";
+		  Client.Email = ClsInputValidate::ReadString();
+
+		  cout << "\nEnter Phone: ";
+		  Client.Phone = ClsInputValidate::ReadString();
+
+		  cout << "\nEnter PinCode: ";
+		  Client.PinCod = ClsInputValidate::ReadString();
+
+		  cout << "\nEnter Account Balance: ";
+		  Client.AccounBalanc = ClsInputValidate::ReadFloatNumber();
+
+
+	  }
+	  static void _PrintClient(clsBankClient& Clint)
+	  {
+		  cout << "\nClient Card:";
+		  cout << "\n---------------------------------";
+		  cout << "\nFirstName      :" << Clint.FirtsName << endl;
+		  cout << "\nLastName       :" << Clint.LastName << endl;
+		  cout << "\nFullName       :" << Clint.FullName() << endl;
+		  cout << "\nEmail          :" << Clint.Email << endl;
+		  cout << "\nPhone          :" << Clint.Phone << endl;
+		  cout << "\nAccountNember  :" << Clint.GetAccountNamber() << endl;
+		  cout << "\nPassWord       :" << Clint.PinCod << endl;
+		  cout << "\nBalance        :" << Clint.AccounBalanc << endl;
+		  cout << "\n---------------------------------\n";
+	  }
+
+
+  public:
+
+	  static void ShowUpdateClientScreen()
+	  {
+		  if (!CheckAccessRights(clsUser::enPermissions::pUpdateClients))
+		  {
+			  return;
+		  }
+
+		  _DrawScreenHeader("\tUpdate Client Screen");
+
+		  string AccountNumber = "";
+		  cout << "\nPlease Enter client Account Number: ";
+		  AccountNumber = ClsInputValidate::ReadString();
+
+		  while (!clsBankClient::IsClientExist(AccountNumber))
+		  {
+			  cout << "\nAccount number is not found, choose another one: ";
+			  AccountNumber = ClsInputValidate::ReadString();
+		  }
+
+		  clsBankClient Client1 = clsBankClient::Find(AccountNumber);
+
+		  _PrintClient(Client1);
+
+		  cout << "\nAre you sure you want to update this client y/n? ";
+
+		  char Answer = 'n';
+		  cin >> Answer;
+
+		  if (Answer=='y' || Answer=='Y')
+		  {
+			  cout << "\n\nUpdate Client Info:";
+			  cout << "\n____________________\n";
+
+			  _ReadClientInfo(Client1);
+
+			  clsBankClient::enSaveResults SaveResult;
+
+			  SaveResult = Client1.Save();
+
+			  switch (SaveResult)
+			  {
+			    case clsBankClient::svSucceeded:
+			    {
+					cout << "\nAccount Updated Successfully :-)\n";
+					_PrintClient(Client1);
+
+					break;
+			    }
+				case clsBankClient::svFaildEmptyObject:
+				{
+					cout << "\nError account was not saved because it's Empty";
+
+					break;
+				}
+				
+
+			  }
+
+
+
+		  }
+
+
+
+	  }
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"clsCurrency.h"
+#include"ClsInputValidate.h"
+#include"ClsString.h"
+using namespace std;
+
+class clsUpdateCurrencyRateScreen:protected clsScreen
+{
+  private:
+
+	  static void _PrintCurrency(clsCurrency Currency)
+	  {
+		  cout << "\nCurrency Card:\n";
+		  cout << "_______________________________\n";
+		  cout << "\nCountry : " << Currency.Country();
+		  cout << "\nCode     :" << Currency.CurrencyCode();
+		  cout << "\nName     :" << Currency.CurrencyName();
+		  cout << "\nRate(1$) :" << Currency.Rate();
+		  cout << "\n_______________________________\n";
+
+	  }
+	  static float _ReadRate()
+	  {
+		  float NewRate;
+
+		  cout << "\nEnter New Rate :";
+		  NewRate = ClsInputValidate::ReadFloatNumber();
+
+		  return NewRate;
+		  
+
+	  }
+	
+
+
+  public:
+
+	  static void ShowUpdateCurrencyRateScreen()
+	  {
+		  _DrawScreenHeader("\tUpdate Currency Screen");
+
+		  
+		  cout << "\nPlease Enter Currency Code: ";
+
+		  string CurrencyCode = ClsString::ReadString();
+
+		  while (!clsCurrency::IsCurrencyExist(CurrencyCode))
+		  {
+			  cout << "\nCurrency is not found, choose another one: ";
+			  CurrencyCode = ClsString::ReadString();
+		  }
+
+
+		  clsCurrency Currency = clsCurrency::FindByCode(CurrencyCode);
+		  _PrintCurrency(Currency);
+
+		  cout << "\nAre you sure you want to update the rate of this Currency y/n? ";
+		  char Answer = 'n';
+		  cin >> Answer;
+
+		  if (Answer=='y'||Answer=='Y')
+		  {
+			  cout << "\n\nUpdate Currency Rate:";
+			  cout << "\n____________________\n";
+			  Currency.UpdateRate(_ReadRate());
+
+			  cout << "\nCurrency Rate Updated Successfully :-)\n";
+			  _PrintCurrency(Currency);
+
+			  
+		  }
+
+
+	  }
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"ClsInputValidate.h"
+using namespace std;
+
+
+class clsUpdateUserScreen:protected clsScreen
+{
+
+ private:
+	 static void _PrintUser(clsUser& User)
+	 {
+		 cout << "\nClient Card:";
+		 cout << "\n---------------------------------";
+		 cout << "\nFirstName   :" << User.FirtsName << endl;
+		 cout << "\nLastName    :" << User.LastName << endl;
+		 cout << "\nFullName    :" << User.FirtsName << endl;
+		 cout << "\nEmail       :" << User.Email << endl;
+		 cout << "\nPhone       :" << User.Phone << endl;
+		 cout << "\nUser Name   :" << User.UserName << endl;
+		 cout << "\nPassWord    :" << User.PassWord << endl;
+		 cout << "\nPermissions :" << User.Permissions << endl;
+		 cout << "\n---------------------------------\n";
+
+	 }
+	 static int _ReadPermissionsToSet()
+	 {
+		 char Answer = 'n';
+		 short Permissions = 0;
+
+		 cout << "\nDo you want to give full access? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 return -1;
+		 }
+		 cout << "\nDo you want to give access to : \n ";
+
+		 cout << "\nShow Clint List? N/Y ?";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pListClients;
+		 }
+
+		 cout << "\nAdd New Client? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pAddNewClient;
+		 }
+
+		 cout << "\nDelete Client? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pDeleteClient;
+		 }
+
+		 cout << "\nUpdate Client? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pUpdateClients;
+
+		 }
+
+		 cout << "\nFind Client? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pFindClient;
+		 }
+
+		 cout << "\nTransactions? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pTranactions;
+		 }
+
+		 cout << "\nManage Users? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pManageUsers;
+		 }
+
+		 cout << "\nShow Login Register? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pShowLogInRegister;
+		 }
+
+		 cout << "\nShow Currency Exchange? y/n? ";
+		 cin >> Answer;
+		 if (Answer == 'y' || Answer == 'Y')
+		 {
+			 Permissions += clsUser::pCurrencyExchang;
+		 }
+
+		 return Permissions;
+
+
+
+	 }
+	 static void _ReadUserInfo(clsUser& user)
+	 {
+		 cout << "\nEnter FirstName:";
+		 user.FirtsName = ClsString::ReadString();
+
+		 cout << "\nEnter LastName:";
+		 user.LastName = ClsString::ReadString();
+
+		 cout << "\nEnter Email:";
+		 user.Email = ClsString::ReadString();
+
+		 cout << "\nEnter Phon:";
+		 user.Phone = ClsString::ReadString();
+
+		 cout << "\nEnter PassWord:";
+		 user.PassWord = ClsString::ReadString();
+
+		 cout << "\nEnter Permissions:\n";
+		 user.Permissions = _ReadPermissionsToSet();
+
+	 }
+
+ public:
+	 static void ShowUpdateUserScreen()
+	 {
+		 _DrawScreenHeader("\tUpdate User Screen");
+
+		 string UserName = "";
+
+		 cout << "\nPlease Enter User UserName: ";
+		 UserName = ClsInputValidate::ReadString();
+
+		 while (!clsUser::IsUserExist(UserName))
+		 {
+			 cout << "\nAccount number is not found, choose another one: ";
+			 UserName = ClsInputValidate::ReadString();
+		 }
+
+		 clsUser User1 = clsUser::Find(UserName);
+
+		 _PrintUser(User1);
+
+		 cout << "\nAre you sure you want to update this User y/n? ";
+
+		 char Answer = 'n';
+		 cin >> Answer;
+
+		 if (Answer=='y'||Answer=='Y')
+		 {
+			 cout << "\n\nUpdate User Info:";
+			 cout << "\n____________________\n";
+
+			 _ReadUserInfo(User1);
+
+			 clsUser::enSaveResults SaveResult;
+
+			 SaveResult = User1.Save();
+			 switch (SaveResult)
+			 {
+			   case clsUser::enSaveResults::svSucceeded:
+			   {
+				   cout << "\nUser Updated Successfully :-)\n";
+				   _PrintUser(User1);
+				   break;
+
+			   }
+			  
+			   case clsUser::enSaveResults::svFaildEmptyObject:
+			   {
+				   cout << "\nError User was not saved because it's Empty";
+				   break;
+			   }
+
+			 }
+
+
+
+
+		 }
+		 else
+		 {
+			 cout << "\nThe update process has been cancelled.\n";
+
+		 }
+		 
+
+
+
+
+
+	 }
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsPerson.h"
+#include"ClsString.h"
+#include<vector>
+#include"ClsData.h"
+#include"clsUtil.h"
+
+#include<fstream>
+
+using namespace std;
+
+
+class clsUser:public clsPerson
+{
+ private:
+	 enum enMode{EmptyMode=0,UpdateMode,AddNewMode};
+
+	 enMode _Mode;
+	 string _UserName;
+	 string _Password;
+	 int _Permissions;
+	 bool _MarkedForDelete = false;
+
+
+	 static clsUser _ConvertLinetoUserObject(string Line, string Seperator = "#//#")
+	 {
+		 vector<string>VuserData;
+		 VuserData = ClsString::SplitString(Line, Seperator);
+		 return clsUser(enMode::UpdateMode, VuserData[0], VuserData[1], VuserData[2], VuserData[3], VuserData[4], ClsUtil::DecryptText(VuserData[5]), stof(VuserData[6]));
+
+	 }
+	 static clsUser _GetEmptyUserObject()
+	 {
+		 return clsUser(enMode::EmptyMode, "", "", "", "", "", "", 0);
+	 }
+
+	 static string _ConverUserObjectToLine(clsUser User, string Seperator = "#//#")
+	 {
+		 string stUserRecord = "";
+
+		 stUserRecord = stUserRecord + User.FirtsName + Seperator;
+		 stUserRecord = stUserRecord + User.LastName + Seperator;
+		 stUserRecord = stUserRecord + User.Email + Seperator;
+		 stUserRecord = stUserRecord + User.Phone + Seperator;
+		 stUserRecord = stUserRecord + User.GetUserName() + Seperator;
+		 stUserRecord = stUserRecord + ClsUtil::EncryptText(User.PassWord) + Seperator;
+		 stUserRecord = stUserRecord + to_string(User.Permissions);
+
+		 return stUserRecord;
+
+	 }
+
+	 static void _SaveUsersDataToFile(vector<clsUser>vUsers)
+	 {
+		 fstream MyFile;
+		 MyFile.open("Users.txt", ios::out);
+
+		 if (MyFile.is_open())
+		 {
+			 string DataLine;
+
+			 for (clsUser& C : vUsers)
+			 {
+				 if (C._MarkedForDelete == false)
+				 {
+					 DataLine = _ConverUserObjectToLine(C);
+					 MyFile << DataLine << endl;
+				 }
+
+
+			 }
+			 MyFile.close();
+		 }
+
+
+	 }
+
+
+	 static vector<clsUser>_LoadUsersDataFromFile()
+	 {
+		 vector<clsUser>vUsers;
+
+		 fstream MyFile;
+		 MyFile.open("Users.txt", ios::in);
+
+		 if (MyFile.is_open())
+		 {
+			 string line;
+
+			 while (getline(MyFile, line))
+			 {
+				 clsUser User = _ConvertLinetoUserObject(line);
+
+				 vUsers.push_back(User);
+
+
+			 }
+
+			 MyFile.close();
+		 }
+
+		 return vUsers;
+
+	 }
+
+	 void  _Update()
+	 {
+		 vector<clsUser>_vUsers;
+		 _vUsers = _LoadUsersDataFromFile();
+
+		 for (clsUser& C : _vUsers)
+		 {
+			 if (C.GetUserName() == GetUserName())
+			 {
+				 C = *this;
+				 break;
+			 }
+		 }
+
+		 _SaveUsersDataToFile(_vUsers);
+	 }
+
+	 void  _AddNewLineToFile(string LineUser)
+	 {
+		 fstream MyFile;
+		 MyFile.open("Users.txt", ios::out | ios::app);
+
+		 if (MyFile.is_open())
+		 {
+			 MyFile << LineUser << endl;
+			 MyFile.close();
+
+		 }
+
+	 }
+
+	 void  _AddNew()
+	 {
+		 _AddNewLineToFile(_ConverUserObjectToLine(*this));
+	 }
+
+	  string _PrepareLogInRecord(string Seperator="#//#")
+	  {
+		  string LoginRecord = "";
+
+		 LoginRecord += ClsDate::GetSystemDateTimeString() + Seperator;
+		 LoginRecord += UserName + Seperator;
+		 LoginRecord += ClsUtil::EncryptText(PassWord) + Seperator;
+		 LoginRecord += to_string(Permissions);
+
+
+		 return LoginRecord;
+
+	  }
+	  struct stLoginRegisterRecord;
+
+	  static stLoginRegisterRecord _ConvertLoginRegisterLineToRecord(string Line,string Seperator = "#//#")
+	  {
+		  stLoginRegisterRecord LoginRegisterRecord;
+
+		  vector<string>VloginRegister = ClsString::SplitString(Line, Seperator);
+
+		  LoginRegisterRecord.DateTime = VloginRegister[0];
+		  LoginRegisterRecord.UserName = VloginRegister[1];
+		  LoginRegisterRecord.Password = ClsUtil::DecryptText(VloginRegister[2]);
+		  LoginRegisterRecord.Permissions = stoi(VloginRegister[3]);
+
+		  return LoginRegisterRecord;
+	  }
+
+ public:
+
+	 struct stLoginRegisterRecord
+	 {
+		 string DateTime;
+		 string UserName;
+		 string Password;
+		 int Permissions;
+	 };
+	 static enum enPermissions{ eAll = -1,pListClients=1,pAddNewClient=2,pDeleteClient=4,pUpdateClients=8,pFindClient=16,pTranactions=32,pManageUsers=64,pShowLogInRegister=128,pCurrencyExchang=256 };
+
+	 clsUser(enMode Mod ,string FirtsName, string LastName, string Email, string Phone,string Username,string Password,int Permissions):clsPerson(FirtsName,LastName,Email,Phone)
+	 {
+		 _Mode = Mod;
+		 _UserName = Username;
+		 _Password = Password;
+		 _Permissions = Permissions;
+
+	 }
+
+	 void SetUserName(string username)
+	 {
+		 _UserName = username;
+	 }
+	 string GetUserName()
+	 {
+		 return _UserName;
+	 }
+	 __declspec(property(get=GetUserName,put=SetUserName))string UserName;
+
+	 void SetPassWord(string password)
+	 {
+		 _Password = password;
+	 }
+	 string GetPassWord()
+	 {
+		 return _Password;
+	 }
+	 __declspec(property(get = GetPassWord, put = SetPassWord))string PassWord;
+
+	 void SetPermissions(int Permissions)
+	 {
+		 _Permissions = Permissions;
+	 }
+	 int GetPermissions()
+	 {
+		 return _Permissions;
+		 
+	 }
+	 __declspec(property(get = GetPermissions, put = SetPermissions))int Permissions;
+
+	 bool MarkedForDeleted()
+	 {
+		 return _MarkedForDelete;
+	 }
+
+	 string View_permission_results()
+	 {
+		 if (_Permissions==-1)
+		 {
+			 return "All permissions";
+		 }
+		 else
+		 {
+			return "Some permissions";
+		 }
+	 }
+
+	 static clsUser Find(string username)
+	 {
+		 fstream MyFile;
+		 MyFile.open("Users.txt", ios::in);
+
+		 if (MyFile.is_open())
+		 {
+			 string Line;
+
+			 while (getline(MyFile, Line))
+			 {
+
+				 clsUser User = _ConvertLinetoUserObject(Line);
+				 if (User.GetUserName() == username)
+				 {
+					 MyFile.close();
+					 return User;
+
+				 }
+
+
+
+			 }
+			 MyFile.close();
+		 }
+
+		 return _GetEmptyUserObject();
+
+
+	 }
+	 static clsUser Find(string username,string password)
+	 {
+		 fstream MyFile;
+		 MyFile.open("Users.txt", ios::in);
+
+		 if (MyFile.is_open())
+		 {
+			 string Line;
+
+			 while (getline(MyFile, Line))
+			 {
+
+				 clsUser User = _ConvertLinetoUserObject(Line);
+				 if ((User.GetUserName() == username) && (User.GetPassWord() == password))
+				 {
+					 MyFile.close();
+					 return User;
+
+				 }
+
+
+
+			 }
+			 MyFile.close();
+		 }
+
+		 return _GetEmptyUserObject();
+
+
+	 }
+
+
+	 static bool IsEmpty(clsUser User)
+	 {
+		 return(User._Mode == enMode::EmptyMode);
+
+	 }
+	 bool IsEmpty()
+	 {
+		 return(_Mode == enMode::EmptyMode);
+
+	 }
+
+	 static bool IsUserExist(string Username)
+	 {
+		 clsUser User = clsUser::Find(Username);
+		 return !(User.IsEmpty());
+		
+
+	 }
+
+
+	 static clsUser  GetAddNewUserObject(string username)
+	 {
+		 return clsUser(enMode::AddNewMode, "", "", "", "", username, "", 0);
+	 }
+
+
+	 static enum enSaveResults { svFaildEmptyObject = 0, svSucceeded , svFaildUserExist  };
+
+
+	 enSaveResults Save()
+	 {
+		 switch (_Mode)
+		 {
+			 if (IsEmpty())
+			 {
+				 return enSaveResults::svFaildEmptyObject;
+			 }
+
+		 case enMode::UpdateMode:
+		 {
+			 _Update();
+
+			 return enSaveResults::svSucceeded;
+			 break;
+		 }
+		 case  enMode::AddNewMode:
+		 {
+			 if (clsUser::IsUserExist(_UserName))
+			 {
+				 return enSaveResults::svFaildUserExist;
+			 }
+			 else
+			 {
+				 _AddNew();
+				 _Mode = enMode::UpdateMode;
+				 return enSaveResults::svSucceeded;
+			 }
+
+
+
+			 break;
+		 }
+
+		 }
+
+	 }
+
+	 bool Delete()
+	 {
+		 vector<clsUser>_vUsers;
+
+		 _vUsers = _LoadUsersDataFromFile();
+
+		 for (clsUser& U : _vUsers)
+		 {
+			 if (U.UserName ==_UserName)
+			 {
+				 U._MarkedForDelete = true;
+				 break;
+			 }
+
+		 }
+		 _SaveUsersDataToFile(_vUsers);
+
+		 *this = _GetEmptyUserObject();
+
+		 return true;
+	 }
+
+	 static vector<clsUser>GetUsersList()
+	 {
+		 return _LoadUsersDataFromFile();
+	 }
+
+	 bool CheckAccessPermission(enPermissions Permissions)
+	 {
+		 if (this->Permissions ==enPermissions::eAll )
+		 {
+			 return true;
+
+		 }
+		 if ((Permissions & this->Permissions)==Permissions)
+		 {
+			 return true;
+		 }
+		 else
+		 {
+			 return false;
+		 }
+
+	 }
+
+	  void RegisterLogIn()
+	 {
+		 string stDataLine = _PrepareLogInRecord();
+		 fstream MyFile;
+		 MyFile.open("LoginRegister.txt", ios::out | ios::app);
+
+		 if (MyFile.is_open())
+		 {
+			 MyFile << stDataLine << endl;
+			 MyFile.close();
+
+		 }
+
+	 }
+
+	  static vector<stLoginRegisterRecord>GetLoginRegisterList()
+	  {
+		  vector<stLoginRegisterRecord>vLoginRegisterRecord;
+
+		  fstream MyFile;
+		  MyFile.open("LoginRegister.txt", ios::in);
+
+		  if (MyFile.is_open())
+		  {
+			  string Line;
+			  stLoginRegisterRecord LoginRegisterRecord;
+
+			  while (getline(MyFile,Line))
+			  {
+				  LoginRegisterRecord = _ConvertLoginRegisterLineToRecord(Line);
+				  vLoginRegisterRecord.push_back(LoginRegisterRecord);
+
+
+			  }
+			  MyFile.close();
+		  }
+
+		  return vLoginRegisterRecord;
+
+	  }
+
+	 
+
+
+	
+		 
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"clsUser.h"
+#include<vector>
+using namespace std;
+
+
+class clsUsersListScreen:protected clsScreen
+{
+  private:
+
+	  static void _PrintUserRecordLine(clsUser User)
+	  {
+		
+
+
+		  cout << setw(8) << left << "" << "\033[38;5;208m" << "| " << "\033[0m" << left << setw(12) << User.UserName;
+		  cout << "\033[38;5;208m" << "| " << "\033[0m" << left << setw(22) << User.FullName();
+		  cout << "\033[38;5;208m" << "| " << "\033[0m" << left << setw(12) << User.Phone;
+		  cout << "\033[38;5;208m" << "| " << "\033[0m" << left << setw(26) << User.Email;
+		  cout << "\033[38;5;208m" << "| " << "\033[0m" << left << setw(8) << User.PassWord;
+		  cout << "\033[38;5;208m" << "| " << "\033[0m" << left << setw(12) << User.View_permission_results();
+
+	  }
+
+
+  public:
+
+	  static void ShowUsersList()
+	  {
+		  vector<clsUser>vUsers;
+		  vUsers = clsUser::GetUsersList();
+
+		  string Title = "\t  User List Screen";
+		  string SubTitle = "\t    (" + to_string(vUsers.size()) + ") User(s).";
+		  _DrawScreenHeader(Title, SubTitle);
+
+		  
+
+		  cout << setw(8) << left << "" << "\033[38;5;208m" << "\n\t=========================================================";
+		  cout << "====================================================\n";
+		  cout << setw(8) << left << "" << "| " << "\033[38;5;205m" << left << setw(12) << "UserName";
+		  cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(22) << "Full Name";
+		  cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(12) << "Phone";
+		  cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(26) << "Email";
+		  cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(8) << "Password";
+		  cout << "\033[38;5;208m" << "| " << "\033[38;5;205m" << left << setw(12) << "Permissions";
+		  cout << setw(8) << left << "" << "\033[38;5;208m" << "\n\t=========================================================";
+		  cout << "====================================================\033[0m\n";
+
+		 
+		
+
+		  if (vUsers.size()==0)
+		  {
+			  cout << "\t\t\t\t\tNo Users Available In the System!";
+		  }
+		  else
+		  {
+			  for (clsUser &User:vUsers)
+			  {
+				  _PrintUserRecordLine(User);
+				  cout << endl;
+			  }
+
+		  }
+
+		  
+		  cout << setw(8) << left << "" << "\033[38;5;208m" << "=========================================================";
+		  cout << "====================================================\033[0m\n";
+
+		  
+
+		 
+	  }
+};
+
+
+#pragma once
+#include<iostream>
+#include<string>
+#include"ClsData.h"
+using namespace std;
+
+class ClsUtil
+{
+
+ public:
+
+	  enum enSmalCarDij { smallettel = 1, capitaltettel, dijit, spcialcaracter, MixCaracte };
+	  
+	  static void Srand()
+	 {
+		 srand((unsigned)time(0));
+	 }
+	  static int RandomNumber(int From,int to)
+	  {
+		  int Random = 0;
+		  Random = rand() % (to - From + 1) + From;
+		  return Random;
+
+	  }
+	  static char GetRandomCaracter(enSmalCarDij enChar)
+	  {
+		  if (enChar==MixCaracte)
+		  {
+			  enChar= enSmalCarDij(RandomNumber(1, 3));
+		  }
+		  switch (enChar)
+		  {
+		      case smallettel:
+			  {
+				  return char(RandomNumber(97,122));
+				  break;
+			  }
+			  case capitaltettel:
+			  {
+				  return char(RandomNumber(65,90));
+				  break;
+			  }
+			  case spcialcaracter:
+			  {
+				  return char(RandomNumber(33,47));
+				  break;
+			  }
+			  case dijit:
+			  {
+				  return char(RandomNumber(48,57));
+				  break;
+			  }
+			
+		  
+		 
+
+		  }
+
+	  }
+	  static string GeneratWord(enSmalCarDij charType,int WordLength)
+	  {
+		  string word = "";
+		  char Char;
+
+		  for (int i=0;i<WordLength;i++)
+		  {
+			  Char = GetRandomCaracter(charType);
+			  word += +Char;
+		  }
+
+
+		  return word;
+
+	  }
+	  static string GeneratKey(enSmalCarDij charType)
+	  {
+		  string Key = "";
+		  Key += GeneratWord(charType, 4) + "-";
+		  Key += GeneratWord(charType, 4) + "-";
+		  Key += GeneratWord(charType, 4) + "-";
+		  Key += GeneratWord(charType, 4);
+
+		  return Key;
+
+	  }
+	  static void GeneratKeys(int NumberKey, enSmalCarDij charType)
+	  {
+		  for (int i=1;i<=NumberKey;i++)
+		  {
+			  cout << "Key[" << i << "] = " << GeneratKey(charType) << endl;
+
+		  }
+	  }
+	  static void Swap(int &number1,int &number2)
+	  {
+		  int swap;
+		  swap = number1;
+		  number1 = number2;
+		  number2 = swap;
+
+	  }
+	  static void Swap(double& number1, double& number2)
+	  {
+		  double swap;
+		  swap = number1;
+		  number1 = number2;
+		  number2 = swap;
+	  }
+
+	  static void Swap(string& number1, string& number2)
+	  {
+		  string swap;
+		  swap = number1;
+		  number1 = number2;
+		  number2 = swap;
+	  }
+
+	  static void Swap(ClsDate& number1, ClsDate& number2)
+	  {
+		  ClsDate swap;
+		  swap = number1;
+		  number1 = number2;
+		  number2 = swap;
+	  }
+	  static void ShuflleArray(int arr[],int lengtharr)
+	  {
+		  for (int i=0;i<lengtharr;i++)
+		  {
+			  Swap(arr[RandomNumber(0, lengtharr - 1)], arr[RandomNumber(0, lengtharr - 1)]);
+		  }
+
+		  
+
+	  }
+
+	  static void ShuflleArray(string arr[], int lengtharr)
+	  {
+		  for (int i = 0; i < lengtharr; i++)
+		  {
+			  Swap(arr[RandomNumber(0, lengtharr - 1)], arr[RandomNumber(0, lengtharr - 1)]);
+		  }
+
+
+
+	  }
+
+	  static void FillArrayWithRandomNumber(int arr[],int lengtharry,int FromNum,int ToNum)
+	  {
+		  for (int i=0;i<lengtharry;i++)
+		  {
+			  arr[i] = RandomNumber(FromNum, ToNum);
+		  }
+	  }
+	  static void FillArrayWithRandomWords(string arr[],int Lengtharr, enSmalCarDij charType, int WordLength)
+	  {
+		  for (int i=0;i<Lengtharr;i++)
+		  {
+			  arr[i] = GeneratWord( charType,  WordLength);
+		  }
+	  }
+	  static string Tabs(int LengthTabs)
+	  {
+		  string tabs = "";
+		  for (int i=0;i<LengthTabs;i++)
+		  {
+			  tabs += "\t";
+		  }
+		  return tabs;
+	  }
+	  static string EncryptText(string Text,int EncrypKey=0)
+	  {
+		  string EncryptWord = "";
+
+		  for (int i=0;i<Text.size();i++)
+		  {
+			  EncryptWord += char(Text[i]+EncrypKey);
+		  }
+		  return EncryptWord;
+	  }
+	  static string DecryptText(string Text, int EncrypKey=0)
+	  {
+		  string DecryptWord = "";
+
+		  for (int i = 0; i < Text.size(); i++)
+		  {
+			  DecryptWord += char(Text[i] - EncrypKey);
+		  }
+		  return DecryptWord;
+	  }
+	  static string NumberToText(long long int number)
+	  {
+		  if (number >= 0 && number <= 19)
+		  {
+			  string arr[20] = { "","One", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+			  "eleven", "twelve", "thirteen", "fourtee", "fifteen", "sixteen", "seventeen", "twelve", "nineteen" };
+
+			  return arr[number];
+
+		  }
+
+		  if (number >= 20 && number <= 99)
+		  {
+			  string arr[10] = { "","","Twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety" };
+
+			  return arr[number / 10] + " " + NumberToText(number % 10);
+		  }
+
+		  if (number >= 100 && number <= 999)
+		  {
+			  return NumberToText(number / 100) + " " + "hundred" + " " + NumberToText(number % 100);
+
+		  }
+
+		  if (number >= 1000 && number <= 999999)
+		  {
+			  return NumberToText(number / 1000) + " " + "thousand" + " " + NumberToText(number % 1000);
+
+		  }
+
+		  if (number >= 1000000 && number <= 999999999)
+		  {
+			  return NumberToText(number / 1000000) + " " + "million" + " " + NumberToText(number % 1000000);
+
+		  }
+
+		  if (number >= 1000000000)
+		  {
+			  return NumberToText(number / 1000000000) + " " + "billion" + " " + NumberToText(number % 1000000000);
+
+		  }
+
+
+	  }
+	
+
+
+
+};
+
+
+#pragma once
+#include<iostream>
+#include"clsScreen.h"
+#include"ClsInputValidate.h"
+#include"clsBankClient.h"
+using namespace std;
+
+
+class clsWithdrawScreen:protected clsScreen
+{
+  private:
+	  static string _ReadAccountNumber()
+	  {
+		  cout << "\nPlease enter AccounNumber ? :";
+
+		  string AccountNumber;
+		  cin >> AccountNumber;
+		  return AccountNumber;
+
+	  }
+
+	  static void _PrintClient(clsBankClient& Clint)
+	  {
+		  cout << "\nClient Card:";
+		  cout << "\n---------------------------------";
+		  cout << "\nFirstName      :" << Clint.FirtsName << endl;
+		  cout << "\nLastName       :" << Clint.LastName << endl;
+		  cout << "\nFullName       :" << Clint.FullName() << endl;
+		  cout << "\nEmail          :" << Clint.Email << endl;
+		  cout << "\nPhone          :" << Clint.Phone << endl;
+		  cout << "\nAccountNember  :" << Clint.GetAccountNamber() << endl;
+		  cout << "\nPassWord       :" << Clint.PinCod << endl;
+		  cout << "\nBalance        :" << Clint.AccounBalanc << endl;
+		  cout << "\n---------------------------------\n";
+	  }
+
+  public:
+
+	  static void ShowWithdrawScreen()
+	  {
+		  _DrawScreenHeader("\t  Withdraw Screen");
+
+		  string AccountNumber = _ReadAccountNumber();
+
+		  while (!clsBankClient::IsClientExist(AccountNumber))
+		  {
+			  cout << "\nClient with [" << AccountNumber << "] does not exist.\n";
+			  AccountNumber = _ReadAccountNumber();
+
+		  }
+
+		  clsBankClient Client1 = clsBankClient::Find(AccountNumber);
+		  _PrintClient(Client1);
+
+		  
+		  double Amount = 0;
+		  cout << "\nPlease enter Withdraw amount? ";
+		  Amount = ClsInputValidate::ReadDblNumber();
+
+		  cout << "\nAre you sure you want to perform this transaction? ";
+		  char Answer = 'n';
+		  cin >> Answer;
+
+
+		  if (Answer =='y' || Answer == 'Y')
+		  {
+			  if (Client1.Withdraw(Amount))
+			  {
+				  cout << "\nAmount Withdrew Successfully.\n";
+				  cout << "\nNew Balance is :" << Client1.AccounBalanc;
+			  }
+			  else
+			  {
+				  cout << "\nCannot withdraw, Insuffecient Balance!\n";
+				  cout <<"\nAmount to Withdraw is :" << Amount;
+				  cout << "\nYour Balance is :" << Client1.AccounBalanc;
+				  
+
+
+			  }
+
+		  }
+		  else
+		  {
+			  cout << "\nThe operation has been cancelled.";
+		  }
+		  
+
+
+	  }
+};
+
+
+
+#include <iostream>
+#include"clsLoginScreen.h"
+#include"clsCurrency.h"
+using namespace std;
+
+
+
+
+
+
+
+
+
+
+int main()
+{
+    
+ 
+
+    while (true)
+    {
+        if (!clsLoginScreen::ShowLoginScreen())
+        {
+            break;
+        }
+        
+    }
+
+    
+   
+ 
+
+
+    system("pause>0");
+    return 0;
+}
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{c270ed7f-c55f-4b09-9401-a736b8ae38e4}</ProjectGuid>
+    <RootNamespace>ConsoleApplication1</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ConsoleApplication1.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="clsAddNewClientScreen.h" />
+    <ClInclude Include="clsAddNewUserScreen.h" />
+    <ClInclude Include="clsBankClient.h" />
+    <ClInclude Include="clsCurrenciesListScreen.h" />
+    <ClInclude Include="clsCurrency.h" />
+    <ClInclude Include="clsCurrencyCalculatorScreen.h" />
+    <ClInclude Include="clsCurrencyExchangeMainScreen.h" />
+    <ClInclude Include="ClsData.h" />
+    <ClInclude Include="clsDeleteClientScreen.h" />
+    <ClInclude Include="clsDeleteUserScreen.h" />
+    <ClInclude Include="clsDepositScreen.h" />
+    <ClInclude Include="clsFindClientScreen.h" />
+    <ClInclude Include="clsFindCurrencyScreen.h" />
+    <ClInclude Include="clsFindUserScreen.h" />
+    <ClInclude Include="ClsInputValidate.h" />
+    <ClInclude Include="clsLoginRegisterScreen.h" />
+    <ClInclude Include="clsLoginScreen.h" />
+    <ClInclude Include="clsMainScreen.h" />
+    <ClInclude Include="clsManageUsers.h" />
+    <ClInclude Include="ClsPeriod.h" />
+    <ClInclude Include="clsPerson.h" />
+    <ClInclude Include="clsScreen.h" />
+    <ClInclude Include="ClsString.h" />
+    <ClInclude Include="clsTotalBalancesScreen.h" />
+    <ClInclude Include="clsTransactionsScreen.h" />
+    <ClInclude Include="clsTransferLogScreen.h" />
+    <ClInclude Include="clsTransferScreen.h" />
+    <ClInclude Include="clsUpdateClientScreen.h" />
+    <ClInclude Include="clsUpdateCurrencyRateScreen.h" />
+    <ClInclude Include="clsUpdateUserScreen.h" />
+    <ClInclude Include="clsUser.h" />
+    <ClInclude Include="clsUsersListScreen.h" />
+    <ClInclude Include="clsUtil.h" />
+    <ClInclude Include="clsListClientsScreen.h" />
+    <ClInclude Include="clsWithdrawScreen.h" />
+    <ClInclude Include="Global.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Users.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{016b60ae-d9b0-4bc6-8274-1d260aae021e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Libaray">
+      <UniqueIdentifier>{1e90d105-7a86-477f-9445-e5c1731e643e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Screens">
+      <UniqueIdentifier>{97520083-3bc2-4be1-b2a5-9fa126204c50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Screens\Clinet">
+      <UniqueIdentifier>{8e14e359-1f6d-4244-b57b-f869e1407703}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Screens\Users">
+      <UniqueIdentifier>{9cc4b691-c0dc-485d-84e7-fd76e42dfde4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Screens\Currencies">
+      <UniqueIdentifier>{75f902fc-ed6a-49f1-8803-e3c598b0797f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ConsoleApplication1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="clsMainScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="clsScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Global.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="clsBankClient.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="clsCurrency.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="clsPerson.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="clsUser.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ClsData.h">
+      <Filter>Header Files\Libaray</Filter>
+    </ClInclude>
+    <ClInclude Include="ClsInputValidate.h">
+      <Filter>Header Files\Libaray</Filter>
+    </ClInclude>
+    <ClInclude Include="ClsPeriod.h">
+      <Filter>Header Files\Libaray</Filter>
+    </ClInclude>
+    <ClInclude Include="ClsString.h">
+      <Filter>Header Files\Libaray</Filter>
+    </ClInclude>
+    <ClInclude Include="clsUtil.h">
+      <Filter>Header Files\Libaray</Filter>
+    </ClInclude>
+    <ClInclude Include="clsAddNewClientScreen.h">
+      <Filter>Header Files\Screens\Clinet</Filter>
+    </ClInclude>
+    <ClInclude Include="clsAddNewUserScreen.h">
+      <Filter>Header Files\Screens\Users</Filter>
+    </ClInclude>
+    <ClInclude Include="clsCurrenciesListScreen.h">
+      <Filter>Header Files\Screens\Currencies</Filter>
+    </ClInclude>
+    <ClInclude Include="clsCurrencyCalculatorScreen.h">
+      <Filter>Header Files\Screens\Currencies</Filter>
+    </ClInclude>
+    <ClInclude Include="clsCurrencyExchangeMainScreen.h">
+      <Filter>Header Files\Screens\Currencies</Filter>
+    </ClInclude>
+    <ClInclude Include="clsDeleteClientScreen.h">
+      <Filter>Header Files\Screens\Clinet</Filter>
+    </ClInclude>
+    <ClInclude Include="clsDeleteUserScreen.h">
+      <Filter>Header Files\Screens\Users</Filter>
+    </ClInclude>
+    <ClInclude Include="clsFindClientScreen.h">
+      <Filter>Header Files\Screens\Clinet</Filter>
+    </ClInclude>
+    <ClInclude Include="clsFindCurrencyScreen.h">
+      <Filter>Header Files\Screens\Currencies</Filter>
+    </ClInclude>
+    <ClInclude Include="clsFindUserScreen.h">
+      <Filter>Header Files\Screens\Users</Filter>
+    </ClInclude>
+    <ClInclude Include="clsListClientsScreen.h">
+      <Filter>Header Files\Screens\Clinet</Filter>
+    </ClInclude>
+    <ClInclude Include="clsManageUsers.h">
+      <Filter>Header Files\Screens\Users</Filter>
+    </ClInclude>
+    <ClInclude Include="clsUpdateClientScreen.h">
+      <Filter>Header Files\Screens\Clinet</Filter>
+    </ClInclude>
+    <ClInclude Include="clsUsersListScreen.h">
+      <Filter>Header Files\Screens\Users</Filter>
+    </ClInclude>
+    <ClInclude Include="clsUpdateCurrencyRateScreen.h">
+      <Filter>Header Files\Screens\Currencies</Filter>
+    </ClInclude>
+    <ClInclude Include="clsUpdateUserScreen.h">
+      <Filter>Header Files\Screens\Users</Filter>
+    </ClInclude>
+    <ClInclude Include="clsDepositScreen.h">
+      <Filter>Header Files\Screens\Clinet</Filter>
+    </ClInclude>
+    <ClInclude Include="clsLoginRegisterScreen.h">
+      <Filter>Header Files\Screens\Users</Filter>
+    </ClInclude>
+    <ClInclude Include="clsLoginScreen.h">
+      <Filter>Header Files\Screens\Users</Filter>
+    </ClInclude>
+    <ClInclude Include="clsTotalBalancesScreen.h">
+      <Filter>Header Files\Screens\Clinet</Filter>
+    </ClInclude>
+    <ClInclude Include="clsTransferLogScreen.h">
+      <Filter>Header Files\Screens\Clinet</Filter>
+    </ClInclude>
+    <ClInclude Include="clsTransactionsScreen.h">
+      <Filter>Header Files\Screens\Clinet</Filter>
+    </ClInclude>
+    <ClInclude Include="clsWithdrawScreen.h">
+      <Filter>Header Files\Screens\Clinet</Filter>
+    </ClInclude>
+    <ClInclude Include="clsTransferScreen.h">
+      <Filter>Header Files\Screens\Clinet</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Users.txt">
+      <Filter>Source Files</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+</Project>
+United States of America#//#USD#//#US Dollar#//#1.000000
+Afghanistan#//#AFN#//#Afghanistan Afghani#//#87.480003
+Albania#//#ALL#//#Albania Lek(e)#//#1991.500000
+Algeria#//#DZD#//#Algerian Dinar#//#1991.099976
+American Samoa#//#USD#//#US Dollar#//#1.000000
+France#//#EUR#//#Euro#//#0.900000
+Angola#//#AOA#//#Angolan Kwanza#//#504.734009
+Anguilla#//#XCD#//#E.C. Dollar#//#2.700000
+Antigua and Barbuda#//#XCD#//#E.C. Dollar#//#2.700000
+Argentina#//#ARS#//#Argentine Peso#//#171.744995
+Armenia#//#AMD#//#Armenian Dram#//#391.700012
+Aruba#//#AWG#//#Aruban Guilder#//#1.790000
+Australia#//#AUD#//#Australian Dollar#//#1.451000
+Austria#//#EUR#//#Euro#//#0.938000
+Azerbaijan#//#AZN#//#Azerbaijan Manat#//#1.694000
+Bahamas#//#BSD#//#Bahamian Dollar#//#1.000000
+Bahrain#//#BHD#//#Bahraini Dinar#//#0.377000
+Bangladesh#//#BDT#//#Bangladesh Taka#//#101.000000
+Barbados#//#BBD#//#Barbados Dollar#//#2.000000
+Belarus#//#BYN#//#Belarusian Ruble#//#2.478000
+Belgium#//#EUR#//#Euro#//#0.938000
+Belize#//#BZD#//#Belize Dollar#//#2.000000
+Benin#//#XOF#//#CFA Franc#//#615.401978
+Bermuda#//#BMD#//#Bermuda Dollar#//#1.000000
+Bhutan#//#BTN#//#Bhutan Ngultrum#//#82.800003
+Bolivia#//#BOB#//#Bolivia Boliviano#//#6.852000
+Bosnia and Herzegovina#//#BAM#//#Bosnia and Herzegovina Convertible Mark#//#1.835000
+Botswana#//#BWP#//#Botswana Pula#//#12.953000
+Brazil#//#BRL#//#Brazilian Real#//#5.261000
+Brunei#//#BND#//#Brunei Dollar#//#1.344000
+Bulgaria#//#BGN#//#Bulgarian Lev#//#1.835000
+Burkina Faso#//#XOF#//#CFA Franc#//#615.401978
+Burundi#//#BIF#//#Burundi Franc#//#2043.123047
+Cambodia#//#KHR#//#Cambodian Riel#//#4130.000000
+Cameroon#//#XAF#//#CFA Franc#//#615.401978
+Canada#//#CAD#//#Canadian Dollar#//#1.353000
+Canary Islands#//#EUR#//#Euro#//#0.938000
+Cape Verde#//#CVE#//#Cape Verde Escudo#//#103.447998
+Cayman Islands#//#KYD#//#Cayman Is. Dollar#//#0.820000
+Central African Republic#//#XAF#//#CFA Franc#//#615.401978
+Chad#//#XAF#//#CFA Franc#//#615.401978
+Chile#//#CLP#//#Chilean Peso#//#852.000000
+China#//#CNY#//#Chinese Renminbi#//#6.940000
+Colombia#//#COP#//#Colombian Peso#//#4795.000000
+Comoros#//#KMF#//#Comoros Franc#//#461.552002
+Congo#//#XAF#//#CFA Franc#//#615.401978
+"Congo, Dem. Rep."#//#CDF#//#"Congo Franc, Dem. Rep.of"#//#1987.068970
+Cook Islands#//#NZD#//#New Zealand Dollar#//#1.535000
+Costa Rica#//#CRC#//#Costa Rica Colon#//#580.880005
+Cote d'Ivoire#//#XOF#//#CFA Franc#//#615.401978
+Croatia#//#HRK#//#Croatia Kuna#//#7.073000
+Cuba#//#CUP#//#Cuban Peso#//#24.000000
+Cyprus#//#EUR#//#Euro#//#0.938000
+Czech Republic#//#CZK#//#Czech Koruna#//#22.799999
+Denmark#//#DKK#//#Danish Krone#//#6.979000
+Djibouti#//#DJF#//#Djibouti Francs#//#177.000000
+Dominica#//#XCD#//#E.C. Dollar#//#2.700000
+Dominican Republic#//#DOP#//#Dominican Peso#//#54.716000
+East Timor#//#USD#//#US Dollar#//#1.000000
+Ecuador#//#USD#//#US Dollar#//#1.000000
+Egypt#//#EGP#//#Egyptian Pound#//#24.591999
+El Salvador#//#USD#//#US Dollar#//#1.000000
+Equatorial Guinea#//#XAF#//#CFA Franc#//#615.401978
+Eritrea#//#ERN#//#Eritrea Nakfa#//#15.000000
+Estonia#//#EUR#//#Euro#//#0.938000
+"Eswatini, Kingdom of"#//#SZL#//#Lilangeni#//#17.351000
+Ethiopia#//#ETB#//#Ethiopian Birr#//#53.174000
+Fiji#//#FJD#//#Fiji Dollar#//#2.200000
+Finland#//#EUR#//#Euro#//#0.938000
+France#//#EUR#//#Euro#//#0.938000
+French Guiana#//#EUR#//#Euro#//#0.938000
+French Polynesia#//#XPF#//#CFP Franc#//#111.954002
+Gabon#//#XAF#//#CFA Franc#//#615.401978
+Gambia#//#GMD#//#Gambian Dalasi#//#61.139999
+Georgia#//#GEL#//#Georgian Lari#//#2.685000
+Germany#//#EUR#//#Euro#//#0.938000
+Ghana#//#GHS#//#Ghana Cedi#//#11.000000
+Gibraltar#//#GIP#//#Gibraltar Pound#//#0.804000
+Greece#//#EUR#//#Euro#//#0.938000
+Greenland#//#DKK#//#Danish Krone#//#6.979000
+Grenada#//#XCD#//#E.C. Dollar#//#2.700000
+Guadeloupe#//#EUR#//#Euro#//#0.938000
+Guam#//#USD#//#US Dollar#//#1.000000
+Guatemala#//#GTQ#//#Guatemala Quetzal(es)#//#7.870000
+Guinea#//#GNF#//#Guinean Franc#//#8543.030273
+Guinea-Bissau#//#XOF#//#CFA Franc#//#615.401978
+Guyana#//#GYD#//#Guyana Dollar#//#208.399994
+Haiti#//#HTG#//#Haiti Gourde#//#141.740005
+Honduras#//#HNL#//#Honduras Lempira#//#24.478001
+Hong Kong#//#HKD#//#HongKong Dollar#//#7.773000
+Hungary#//#HUF#//#Hungary Forint#//#383.959991
+Iceland#//#ISK#//#Iceland Krona#//#141.669998
+India#//#INR#//#Indian Rupee#//#82.800003
+Indonesia#//#IDR#//#Indonesia Rupiah#//#15655.000000
+Iran#//#IRR#//#Iranian Rial#//#286676.000000
+Iraq#//#IQD#//#Iraqi Dinar#//#1450.000000
+Ireland#//#EUR#//#Euro#//#0.938000
+Israel#//#ILS#//#Israel Shekel#//#3.389000
+Italy#//#EUR#//#Euro#//#0.938000
+Jamaica#//#JMD#//#Jamaican Dollar#//#153.470001
+Japan#//#JPY#//#Japanese Yen#//#134.869995
+Jordan#//#JOD#//#Jordanian Dinar#//#0.708000
+Kazakhstan#//#KZT#//#Kazakhstan Tenge#//#468.950012
+Kenya#//#KES#//#Kenyan Shilling#//#122.739998
+Kiribati#//#AUD#//#Australian Dollar#//#1.451000
+"Korea, D.P.R. of"#//#KPW#//#"Korean Won, North Korea"#//#110.000000
+"Korea, Republic of"#//#KRW#//#"Korean Won, South Korea"#//#1302.729980
+Kuwait#//#KWD#//#Kuwaiti Dinar#//#0.307000
+Kyrgyzstan#//#KGS#//#Kyrgyzstan Som#//#84.000000
+"Lao, People's Dem. Rep."#//#LAK#//#Laos Kip#//#17363.000000
+Latvia#//#EUR#//#Euro#//#0.938000
+Lebanon#//#LBP#//#Lebanese Pound#//#30600.000000
+Lesotho#//#LSL#//#Lesotho Loti#//#17.351000
+Liberia#//#LRD#//#Liberian Dollar#//#153.412003
+Libyan Arab Jamahiriya#//#LYD#//#Libyan Dinar#//#4.847000
+Liechtenstein#//#CHF#//#Swiss Franc#//#0.924000
+Lithuania#//#EUR#//#Euro#//#0.938000
+Luxembourg#//#EUR#//#Euro#//#0.938000
+Macao#//#MOP#//#Macao Pataca#//#8.007000
+Madagascar#//#MGA#//#"Malagasy Ariary, Madagascar"#//#4383.520020
+Malawi#//#MWK#//#Malawi Kwacha#//#1036.249023
+Malaysia#//#MYR#//#Malaysia Ringgit#//#4.426000
+Maldives#//#MVR#//#Maldives Rufiyaa#//#15.000000
+Mali#//#XOF#//#CFA Franc#//#615.401978
+Malta#//#EUR#//#Euro#//#0.938000
+Marshall Islands#//#USD#//#US Dollar#//#1.000000
+Martinique#//#EUR#//#Euro#//#0.938000
+Mauritania#//#MRU#//#Mauritania Ouguiya#//#37.680000
+Mauritius#//#MUR#//#Mauritius Rupee#//#43.522999
+Mexico#//#MXN#//#Mexican Peso#//#19.670000
+Micronesia#//#USD#//#US Dollar#//#1.000000
+"Moldova, Republic of"#//#MDL#//#Moldovan Leu#//#19.260000
+Monaco#//#EUR#//#Euro#//#0.938000
+Mongolia#//#MNT#//#Mongolia Tugrik#//#3420.000000
+Montenegro#//#EUR#//#Euro#//#0.938000
+Montserrat#//#XCD#//#E.C. Dollar#//#2.700000
+Morocco#//#MAD#//#Morocco Dirham#//#10.479000
+Mozambique#//#MZN#//#Mozambique Metical#//#63.250000
+Myanmar#//#MMK#//#Myanmar Kyat#//#2100.000000
+Namibia#//#NAD#//#Namibia Dollar#//#17.351000
+Nauru#//#AUD#//#Australian Dollar#//#1.451000
+Nepal#//#NPR#//#Nepalese Rupee#//#132.483994
+Netherlands#//#EUR#//#Euro#//#0.938000
+Netherlands Antilles#//#ANG#//#Netherlands Antilles Guilder#//#1.790000
+New Caledonia#//#XPF#//#CFP Franc#//#111.954002
+New Zealand#//#NZD#//#New Zealand Dollar#//#1.535000
+Nicaragua#//#NIO#//#Nicaragua Cordoba Oro#//#36.047001
+Niger#//#XOF#//#CFA Franc#//#615.401978
+Nigeria#//#NGN#//#Nigeria Naira#//#444.600006
+Niue#//#NZD#//#New Zealand Dollar#//#1.535000
+"North Macedonia, Rep. of"#//#MKD#//#Denar#//#57.654999
+Northern Mariana Islands#//#USD#//#US Dollar#//#1.000000
+Norway#//#NOK#//#Norwegian Krone#//#9.760000
+Oman#//#OMR#//#Oman Rial#//#0.385000
+Pakistan#//#PKR#//#Pakistani Rupee#//#224.750000
+"Palau, Republic of"#//#USD#//#US Dollar#//#1.000000
+Panama#//#PAB#//#Panama Balboa#//#1.000000
+Papua New Guinea#//#PGK#//#Kina#//#3.521000
+Paraguay#//#PYG#//#Paraguay Guarani#//#7160.000000
+Peru#//#PEN#//#Sol#//#3.827000
+Philippines#//#PHP#//#Philippine Peso#//#55.889999
+Poland#//#PLN#//#Poland Zloty#//#4.402000
+Portugal#//#EUR#//#Euro#//#0.938000
+Puerto Rico#//#USD#//#US Dollar#//#1.000000
+Qatar#//#QAR#//#Qatari Rial#//#3.672000
+Reunion#//#EUR#//#Euro#//#0.938000
+Romania#//#RON#//#Romanian Leu#//#4.623000
+Russian Federation#//#RUB#//#Russian Rouble#//#63.136002
+Rwanda#//#RWF#//#Rwanda Franc#//#1051.220947
+Saint Helena#//#SHP#//#St.Helena Pound#//#0.804000
+Saint Kitts and Nevis#//#XCD#//#E.C. Dollar#//#2.700000
+Saint Lucia#//#XCD#//#E.C. Dollar#//#2.700000
+Samoa#//#WST#//#Samoa Tala#//#2.674000
+San Marino#//#EUR#//#Euro#//#0.938000
+Sao Tome and Principe#//#STN#//#Sao Tome Principe Dobra#//#23.299000
+Saudi Arabia#//#SAR#//#Saudi Riyal#//#3.759000
+Senegal#//#XOF#//#CFA Franc#//#615.401978
+Serbia#//#RSD#//#Serbian Dinar#//#110.027000
+Seychelles#//#SCR#//#Seychelles Rupee#//#13.175000
+Sierra Leone#//#SLE#//#Sierra Leone Leone#//#18.450001
+Singapore#//#SGD#//#Singapore Dollar#//#1.344000
+Slovakia#//#EUR#//#Euro#//#0.938000
+Slovenia#//#EUR#//#Euro#//#0.938000
+Solomon Islands#//#SBD#//#Solomon Is. Dollar#//#8.157000
+Somalia#//#SOS#//#Somali Shilling#//#24300.000000
+South Africa#//#ZAR#//#South Africa Rand#//#17.351000
+South Sudan#//#SSP#//#South Sudanese Pound#//#663.320007
+Spain#//#EUR#//#Euro#//#0.938000
+Sri Lanka#//#LKR#//#Sri Lanka Rupee#//#362.220001
+St. Vincent and the Grena#//#XCD#//#E.C. Dollar#//#2.700000
+Sudan#//#SDG#//#Sudanese Pound#//#578.000000
+Suriname#//#SRD#//#Surinamese Dollar#//#31.688000
+Sweden#//#SEK#//#Swedish Krona#//#10.177000
+Switzerland#//#CHF#//#Swiss Franc#//#0.924000
+Syrian Arab Republic#//#SYP#//#Syrian Pound#//#3000.000000
+Tajikistan#//#TJS#//#Tajikistan Somoni#//#10.269000
+"Tanzania, United Rep. of"#//#TZS#//#Tanzania Shilling#//#2326.840088
+Thailand#//#THB#//#Thai Baht#//#34.560001
+Togo#//#XOF#//#CFA Franc#//#615.401978
+Tokelau Islands#//#NZD#//#New Zealand Dollar#//#1.535000
+Tonga#//#TOP#//#Tonga Pa'anga#//#2.353000
+Trinidad and Tobago#//#TTD#//#Trinidad and Tobago Dollar#//#6.746000
+Tunisia#//#TND#//#Tunisian Dinar#//#3.140000
+Turkey#//#TRY#//#Turkish Lira#//#18.632999
+Turkmenistan#//#TMT#//#Turkmenistan Manat#//#3.500000
+Turks and Caicos Island#//#USD#//#US Dollar#//#1.000000
+Tuvalu#//#AUD#//#Australian Dollar#//#1.451000
+Uganda#//#UGX#//#Uganda Shilling#//#3690.669922
+Ukraine#//#UAH#//#Ukraine Hryvnia#//#37.000000
+United Arab Emirates#//#AED#//#United Arab Emirates Dirham#//#3.673000
+United Kingdom#//#GBP#//#U.K. Pound#//#0.804000
+Uruguay#//#UYU#//#Uruguay Peso#//#38.525002
+Uzbekistan#//#UZS#//#Uzbekistan Sum#//#11245.000000
+Vanuatu#//#VUV#//#Vanuatu Vatu#//#114.830002
+Venezuela#//#VES#//#Bolivar Digital#//#13.596000
+Viet Nam#//#VND#//#Viet Nam Dong#//#23624.000000
+Virgin Islands (UK)#//#USD#//#US Dollar#//#1.000000
+Virgin Islands (USA)#//#USD#//#US Dollar#//#1.000000
+Wallis and Futuna Islands#//#XPF#//#CFP Franc#//#111.954002
+"Yemen, Republic of"#//#YER#//#Yemeni Rial#//#541.750000
+Zambia#//#ZMW#//#Zambia Kwacha#//#17.440001
+Zimbabwe#//#ZWL#//#Zimbabwe RTGS dollar#//#645.414001
+
+#pragma once
+#include<iostream>
+#include"clsUser.h"
+using namespace std;
+
+clsUser CurrentUser = clsUser::Find("","");
+
+
+
+
+22/2/2025 - 15:18:50#//#User2#//#3456#//#-1
+22/2/2025 - 21:58:2#//#User2#//#3456#//#-1
+24/2/2025 - 20:38:16#//#User2#//#3456#//#-1
+24/2/2025 - 20:44:22#//#User2#//#3456#//#-1
+24/2/2025 - 20:44:53#//#User2#//#3456#//#-1
+24/2/2025 - 20:45:10#//#User2#//#3456#//#-1
+24/2/2025 - 20:46:45#//#User2#//#3456#//#-1
+24/2/2025 - 20:48:3#//#User2#//#3456#//#-1
+24/2/2025 - 20:48:50#//#User2#//#3456#//#-1
+24/2/2025 - 20:51:15#//#User2#//#3456#//#-1
+24/2/2025 - 20:54:25#//#User2#//#3456#//#-1
+24/2/2025 - 20:55:2#//#User2#//#3456#//#-1
+24/2/2025 - 21:11:31#//#User2#//#3456#//#-1
+24/2/2025 - 21:14:49#//#User2#//#3456#//#-1
+24/2/2025 - 21:26:25#//#User2#//#3456#//#-1
+24/2/2025 - 21:27:38#//#User2#//#3456#//#-1
+24/2/2025 - 21:36:28#//#User2#//#3456#//#-1
+24/2/2025 - 21:38:10#//#SLIMAN#//#3636#//#256
+24/2/2025 - 21:38:40#//#SLIMAN#//#3636#//#256
+25/2/2025 - 21:10:8#//#User2#//#3456#//#-1
+25/2/2025 - 21:15:20#//#User2#//#3456#//#-1
+25/2/2025 - 21:21:10#//#User2#//#3456#//#-1
+25/2/2025 - 21:21:38#//#User2#//#3456#//#-1
+25/2/2025 - 21:22:1#//#User2#//#3456#//#-1
+25/2/2025 - 21:43:6#//#User2#//#3456#//#-1
+25/2/2025 - 21:50:56#//#User2#//#3456#//#-1
+25/2/2025 - 21:53:14#//#User2#//#3456#//#-1
+25/2/2025 - 21:54:22#//#User2#//#3456#//#-1
+25/2/2025 - 21:55:32#//#User2#//#3456#//#-1
+25/2/2025 - 22:22:6#//#User2#//#3456#//#-1
+25/2/2025 - 22:22:25#//#User2#//#3456#//#-1
+26/2/2025 - 7:14:41#//#User2#//#3456#//#-1
+26/2/2025 - 7:40:56#//#User2#//#3456#//#-1
+26/2/2025 - 7:43:1#//#User2#//#3456#//#-1
+26/2/2025 - 7:43:55#//#User2#//#3456#//#-1
+26/2/2025 - 7:45:43#//#User2#//#3456#//#-1
+26/2/2025 - 7:46:17#//#User2#//#3456#//#-1
+26/2/2025 - 7:47:45#//#User2#//#3456#//#-1
+26/2/2025 - 7:50:1#//#User2#//#3456#//#-1
+26/2/2025 - 7:51:35#//#User2#//#3456#//#-1
+26/2/2025 - 7:52:49#//#User2#//#3456#//#-1
+26/2/2025 - 7:53:53#//#User2#//#3456#//#-1
+26/2/2025 - 7:55:4#//#User2#//#3456#//#-1
+26/2/2025 - 7:55:28#//#User2#//#3456#//#-1
+28/2/2025 - 22:6:19#//#User2#//#3456#//#-1
+1/3/2025 - 6:50:35#//#User2#//#3456#//#-1
+1/3/2025 - 6:53:11#//#User2#//#3456#//#-1
+1/3/2025 - 7:17:9#//#User2#//#3456#//#-1
+1/3/2025 - 14:10:38#//#User2#//#3456#//#-1
+1/3/2025 - 14:13:10#//#User2#//#3456#//#-1
+1/3/2025 - 14:15:52#//#User2#//#3456#//#-1
+1/3/2025 - 14:20:1#//#User2#//#3456#//#-1
+1/3/2025 - 14:29:17#//#User2#//#3456#//#-1
+1/3/2025 - 14:31:44#//#User2#//#3456#//#-1
+1/3/2025 - 14:32:16#//#User2#//#3456#//#-1
+1/3/2025 - 14:32:40#//#User2#//#3456#//#-1
+1/3/2025 - 14:33:5#//#User2#//#3456#//#-1
+1/3/2025 - 15:6:14#//#User2#//#3456#//#-1
+1/3/2025 - 15:14:36#//#User2#//#3456#//#-1
+2/3/2025 - 6:57:40#//#User2#//#3456#//#-1
+2/3/2025 - 7:5:33#//#User2#//#3456#//#-1
+2/3/2025 - 7:7:34#//#User2#//#3456#//#-1
+2/3/2025 - 7:8:10#//#User2#//#3456#//#-1
+2/3/2025 - 7:35:9#//#User2#//#3456#//#-1
+2/3/2025 - 7:46:34#//#User2#//#3456#//#-1
+2/3/2025 - 7:47:59#//#User2#//#3456#//#-1
+2/3/2025 - 7:55:12#//#User2#//#3456#//#-1
+2/3/2025 - 14:19:36#//#User2#//#3456#//#-1
+2/3/2025 - 15:0:16#//#User2#//#3456#//#-1
+2/3/2025 - 15:1:16#//#User2#//#3456#//#-1
+2/3/2025 - 15:3:28#//#User2#//#3456#//#-1
+2/3/2025 - 15:15:25#//#User2#//#3456#//#-1
+2/3/2025 - 15:16:55#//#User2#//#3456#//#-1
+2/3/2025 - 15:20:33#//#User2#//#3456#//#-1
+2/3/2025 - 15:24:17#//#User2#//#3456#//#-1
+2/3/2025 - 15:25:0#//#User2#//#3456#//#-1
+2/3/2025 - 15:25:42#//#User2#//#3456#//#-1
+2/3/2025 - 15:28:7#//#User2#//#3456#//#-1
+2/3/2025 - 15:29:42#//#User2#//#3456#//#-1
+2/3/2025 - 15:30:41#//#User2#//#3456#//#-1
+3/3/2025 - 6:36:7#//#User2#//#3456#//#-1
+3/3/2025 - 6:37:52#//#User2#//#3456#//#-1
+3/3/2025 - 6:53:43#//#User2#//#3456#//#-1
+3/3/2025 - 7:13:9#//#User2#//#3456#//#-1
+3/3/2025 - 7:15:38#//#User2#//#3456#//#-1
+3/3/2025 - 7:18:40#//#User2#//#3456#//#-1
+3/3/2025 - 7:21:44#//#User2#//#3456#//#-1
+3/3/2025 - 7:30:8#//#User2#//#3456#//#-1
+3/3/2025 - 7:30:57#//#User2#//#3456#//#-1
+3/3/2025 - 17:49:50#//#User2#//#3456#//#-1
+9/3/2025 - 13:52:3#//#User2#//#3456#//#-1
+9/3/2025 - 14:51:27#//#User2#//#3456#//#-1
+9/3/2025 - 15:35:39#//#User2#//#3456#//#-1
+9/3/2025 - 17:55:30#//#User2#//#3456#//#-1
+9/3/2025 - 22:45:33#//#User2#//#3456#//#-1
+10/3/2025 - 15:10:39#//#User2#//#3456#//#-1
+11/3/2025 - 7:11:32#//#User1#//#3456#//#0
+11/3/2025 - 7:11:42#//#User2#//#3456#//#-1
+27/3/2025 - 6:47:8#//#User1#//#3456#//#0
+27/3/2025 - 6:47:20#//#User2#//#3456#//#-1
+30/3/2025 - 21:55:34#//#User2#//#3456#//#-1
+5/5/2025 - 6:35:47#//#User1#//#3456#//#0
+11/9/2025 - 17:30:28#//#User1#//#3456#//#0
+11/9/2025 - 17:32:30#//#User2#//#3456#//#-1
+11/9/2025 - 17:33:29#//#User2#//#3456#//#-1
+4/1/2026 - 7:42:8#//#User1#//#3456#//#0
+4/1/2026 - 7:44:35#//#User2#//#3456#//#-1
+4/1/2026 - 7:49:40#//#User1#//#5678#//#0
+6/1/2026 - 14:46:41#//#User1#//#5678#//#0
+6/1/2026 - 14:50:55#//#User1#//#5678#//#0
+6/1/2026 - 20:26:23#//#User1#//#5678#//#0
+6/1/2026 - 20:55:23#//#User1#//#5678#//#0
+6/1/2026 - 20:56:54#//#User1#//#5678#//#0
+6/1/2026 - 20:57:21#//#User1#//#5678#//#0
+6/1/2026 - 20:58:37#//#User1#//#5678#//#0
+6/1/2026 - 21:11:46#//#User1#//#5678#//#0
+6/1/2026 - 21:12:41#//#User1#//#5678#//#0
+6/1/2026 - 21:13:29#//#User2#//#5678#//#-1
+6/1/2026 - 21:14:54#//#User2#//#5678#//#-1
+6/1/2026 - 21:17:9#//#User2#//#5678#//#-1
+6/1/2026 - 21:32:34#//#User2#//#5678#//#-1
+6/1/2026 - 21:54:19#//#User2#//#5678#//#-1
+6/1/2026 - 21:55:43#//#User2#//#5678#//#-1
+6/1/2026 - 21:56:8#//#User2#//#5678#//#-1
+6/1/2026 - 21:57:12#//#User2#//#5678#//#-1
+6/1/2026 - 22:46:21#//#User1#//#5678#//#0
+6/1/2026 - 22:46:31#//#User2#//#5678#//#-1
+6/1/2026 - 22:48:27#//#User2#//#5678#//#-1
+6/1/2026 - 22:50:2#//#User2#//#5678#//#-1
+6/1/2026 - 22:51:51#//#User2#//#5678#//#-1
+6/1/2026 - 22:52:47#//#User2#//#5678#//#-1
+6/1/2026 - 22:54:12#//#User2#//#5678#//#-1
+6/1/2026 - 22:55:11#//#User2#//#5678#//#-1
+6/1/2026 - 22:55:37#//#User2#//#5678#//#-1
+6/1/2026 - 22:56:5#//#User2#//#5678#//#-1
+6/1/2026 - 22:57:31#//#User2#//#5678#//#-1
+6/1/2026 - 22:58:10#//#User2#//#5678#//#-1
+6/1/2026 - 23:1:59#//#User2#//#5678#//#-1
+6/1/2026 - 23:2:57#//#User2#//#5678#//#-1
+6/1/2026 - 23:3:41#//#User2#//#5678#//#-1
+6/1/2026 - 23:5:45#//#User2#//#5678#//#-1
+6/1/2026 - 23:6:26#//#User2#//#5678#//#-1
+6/1/2026 - 23:7:27#//#User2#//#5678#//#-1
+6/1/2026 - 23:9:19#//#User2#//#5678#//#-1
+6/1/2026 - 23:10:52#//#User2#//#5678#//#-1
+6/1/2026 - 23:14:3#//#User2#//#5678#//#-1
+6/1/2026 - 23:15:10#//#User2#//#5678#//#-1
+7/1/2026 - 9:31:34#//#User2#//#5678#//#-1
+7/1/2026 - 9:32:52#//#User2#//#5678#//#-1
+7/1/2026 - 9:35:17#//#User2#//#5678#//#-1
+7/1/2026 - 9:39:53#//#User2#//#5678#//#-1
+7/1/2026 - 9:57:33#//#User2#//#5678#//#-1
+7/1/2026 - 10:1:14#//#User2#//#5678#//#-1
+7/1/2026 - 10:2:7#//#User2#//#5678#//#-1
+7/1/2026 - 10:2:19#//#User2#//#5678#//#-1
+7/1/2026 - 10:2:47#//#User2#//#5678#//#-1
+7/1/2026 - 10:3:34#//#User2#//#5678#//#-1
+7/1/2026 - 10:3:58#//#User2#//#5678#//#-1
+7/1/2026 - 10:5:24#//#User2#//#5678#//#-1
+7/1/2026 - 10:7:3#//#User2#//#5678#//#-1
+7/1/2026 - 10:7:43#//#User2#//#5678#//#-1
+7/1/2026 - 10:7:59#//#User2#//#5678#//#-1
+7/1/2026 - 10:8:34#//#User2#//#5678#//#-1
+7/1/2026 - 10:9:58#//#User2#//#5678#//#-1
+7/1/2026 - 10:14:28#//#User2#//#5678#//#-1
+7/1/2026 - 10:26:30#//#User2#//#5678#//#-1
+7/1/2026 - 10:28:12#//#User2#//#5678#//#-1
+7/1/2026 - 10:28:47#//#User2#//#5678#//#-1
+7/1/2026 - 10:32:29#//#User2#//#5678#//#-1
+7/1/2026 - 10:32:52#//#User2#//#5678#//#-1
+7/1/2026 - 10:33:13#//#User2#//#5678#//#-1
+7/1/2026 - 10:41:1#//#User2#//#5678#//#-1
+7/1/2026 - 10:42:58#//#User2#//#5678#//#-1
+7/1/2026 - 10:43:37#//#User2#//#5678#//#-1
+7/1/2026 - 10:45:12#//#User2#//#5678#//#-1
+7/1/2026 - 11:6:32#//#User2#//#5678#//#-1
+7/1/2026 - 11:7:28#//#User2#//#5678#//#-1
+7/1/2026 - 11:8:16#//#User2#//#5678#//#-1
+7/1/2026 - 11:11:11#//#User2#//#5678#//#-1
+7/1/2026 - 11:14:13#//#User2#//#5678#//#-1
+7/1/2026 - 11:15:7#//#User2#//#5678#//#-1
+7/1/2026 - 11:15:47#//#User2#//#5678#//#-1
+7/1/2026 - 11:16:49#//#User2#//#5678#//#-1
+7/1/2026 - 11:18:18#//#User2#//#5678#//#-1
+7/1/2026 - 11:20:39#//#User2#//#5678#//#-1
+7/1/2026 - 11:25:25#//#User2#//#5678#//#-1
+7/1/2026 - 11:29:8#//#User2#//#5678#//#-1
+7/1/2026 - 11:29:40#//#User2#//#5678#//#-1
+7/1/2026 - 11:31:17#//#User2#//#5678#//#-1
+7/1/2026 - 11:32:3#//#User2#//#5678#//#-1
+7/1/2026 - 11:32:39#//#User2#//#5678#//#-1
+7/1/2026 - 11:33:26#//#User2#//#5678#//#-1
+7/1/2026 - 11:34:10#//#User2#//#5678#//#-1
+7/1/2026 - 11:40:7#//#User2#//#5678#//#-1
+7/1/2026 - 11:41:56#//#User2#//#5678#//#-1
+7/1/2026 - 11:42:43#//#User2#//#5678#//#-1
+7/1/2026 - 11:46:33#//#User2#//#5678#//#-1
+7/1/2026 - 11:47:18#//#User2#//#5678#//#-1
+7/1/2026 - 11:50:22#//#User2#//#5678#//#-1
+7/1/2026 - 11:51:32#//#User2#//#5678#//#-1
+7/1/2026 - 11:52:23#//#User2#//#5678#//#-1
+7/1/2026 - 11:53:1#//#User2#//#5678#//#-1
+7/1/2026 - 11:53:43#//#User2#//#5678#//#-1
+7/1/2026 - 11:54:50#//#User2#//#5678#//#-1
+7/1/2026 - 11:55:25#//#User2#//#5678#//#-1
+7/1/2026 - 11:55:57#//#User2#//#5678#//#-1
+7/1/2026 - 11:56:21#//#User2#//#5678#//#-1
+7/1/2026 - 11:56:56#//#User2#//#5678#//#-1
+7/1/2026 - 11:57:39#//#User2#//#5678#//#-1
+7/1/2026 - 11:58:31#//#User2#//#5678#//#-1
+7/1/2026 - 16:36:27#//#User2#//#5678#//#-1
+7/1/2026 - 16:37:24#//#User2#//#5678#//#-1
+7/1/2026 - 16:48:23#//#User2#//#5678#//#-1
+7/1/2026 - 16:51:54#//#User2#//#5678#//#-1
+7/1/2026 - 16:52:42#//#User2#//#5678#//#-1
+7/1/2026 - 17:9:12#//#User2#//#5678#//#-1
+7/1/2026 - 17:15:58#//#User2#//#5678#//#-1
+7/1/2026 - 17:16:41#//#User2#//#5678#//#-1
+7/1/2026 - 17:17:6#//#User2#//#5678#//#-1
+7/1/2026 - 17:17:45#//#User2#//#5678#//#-1
+7/1/2026 - 17:18:28#//#User2#//#5678#//#-1
+7/1/2026 - 17:18:44#//#User2#//#5678#//#-1
+7/1/2026 - 17:19:54#//#User2#//#5678#//#-1
+7/1/2026 - 17:22:16#//#User2#//#5678#//#-1
+7/1/2026 - 17:22:45#//#User2#//#5678#//#-1
+7/1/2026 - 17:32:33#//#raouf#//#5445#//#-1
+7/1/2026 - 21:34:35#//#User1#//#5678#//#0
+7/1/2026 - 21:34:47#//#User2#//#5678#//#-1
+7/1/2026 - 21:37:48#//#User2#//#5678#//#-1
+7/1/2026 - 21:44:23#//#User2#//#5678#//#-1
+7/1/2026 - 21:45:47#//#User2#//#5678#//#-1
+7/1/2026 - 21:46:28#//#User2#//#5678#//#-1
+7/1/2026 - 21:49:15#//#User2#//#5678#//#-1
+7/1/2026 - 21:50:9#//#User2#//#5678#//#-1
+7/1/2026 - 21:51:49#//#User2#//#5678#//#-1
+7/1/2026 - 21:56:53#//#User2#//#5678#//#-1
+7/1/2026 - 21:57:40#//#User2#//#5678#//#-1
+7/1/2026 - 22:1:27#//#User2#//#5678#//#-1
+7/1/2026 - 22:2:43#//#User2#//#5678#//#-1
+7/1/2026 - 22:3:37#//#User2#//#5678#//#-1
+7/1/2026 - 22:6:44#//#User2#//#5678#//#-1
+7/1/2026 - 22:16:55#//#User2#//#789:#//#-1
+7/1/2026 - 22:27:20#//#raouf#//#7667#//#-1
+7/1/2026 - 22:33:19#//#SLIMAN#//#3636#//#279
+7/1/2026 - 22:34:1#//#User2#//#3456#//#99
+7/1/2026 - 22:34:57#//#User3#//#789:#//#-1
+7/1/2026 - 22:37:0#//#User2#//#3456#//#99
+7/1/2026 - 22:37:22#//#User2#//#3456#//#99
+7/1/2026 - 22:38:28#//#User1#//#3456#//#-1
+7/1/2026 - 22:39:1#//#User2#//#3456#//#99
+7/1/2026 - 22:41:21#//#raouf#//#3223#//#225
+7/1/2026 - 22:44:16#//#raouf#//#3223#//#225
+7/1/2026 - 22:46:10#//#raouf#//#3223#//#225
+7/1/2026 - 22:49:22#//#raouf#//#3223#//#225
+7/1/2026 - 22:55:31#//#User1#//#3456#//#-1
+7/1/2026 - 23:6:31#//#raouf#//#3223#//#225
+7/1/2026 - 23:7:24#//#raouf#//#3223#//#225
+7/1/2026 - 23:12:23#//#User2#//#3456#//#99
+
+houhou#//#abd araouf#//#houhou.abdaraouf@gmail.com#//#0667957999#//#A100#//#1234#//#56.364
+Hriz#//#achref#//#hriz.achref@gmail.com#//#0585957994#//#A101#//#1235#//#56.364
+badi#//#mousab#//#badi.mousab@gmail.com#//#074287447#//#A102#//#1254#//#86.364
+adlan#//#mahdi#//#adlan.mahdi@gmail.com#//#068574254#//#A103#//#1274#//#36.364
+kribaa#//#ilyas#//#kribaa.ilyas@gmail.com#//#0785978451#//#A104#//#0234#//#66.364
+bala#//#chaker#//#bala.chaker@gmail.com#//#0598451657#//#A105#//#8757#//#96.364
+
+20/2/2025 - 23:15:21#//#A101#//#A100#//#500.000000#//#500.041016#//#500.008789#//#User1
+20/2/2025 - 23:17:5#//#A100#//#A103#//#500.000000#//#0.008789#//#2498.962891#//#User2
+21/2/2025 - 7:8:40#//#A104#//#A100#//#8487.200195#//#0.000000#//#8487.208984#//#User6
+21/2/2025 - 7:25:8#//#A103#//#A104#//#2498.959961#//#0.002930#//#2498.959961#//#User1
+21/2/2025 - 7:37:54#//#A101#//#A104#//#500.040985#//#0.000031#//#2999.000977#//#User5
+21/2/2025 - 15:32:56#//#A104#//#A100#//#2999.000000#//#0.000977#//#11486.208984#//#User1
+
+houhou#//#abd araouf#//#abdaraouf.houhou@gmail.com#//#0667957999#//#abdaraouf#//#1234#//#1
+
+Hilal#//#Ali#//#Hilal@gmail.com#//#06658784#//#User1#//#3456#//#-1
+Jamila#//#adli#//#jamila@gmail.com#//#02365874#//#User2#//#3456#//#99
+Lina#//#Loay#//#Lina@gmail.com#//#058745265#//#User3#//#3456#//#-1
+Mazem#//#Kareem#//#Mazin@gmail.com#//#898234#//#User4#//#789:#//#-1
+Alia#//#Ali#//#M@gmail.com#//#09388322#//#User6#//#789:#//#-1
+Ola#//#Ahmad#//#Ola@gmail.com#//#838837#//#User8#//#789:#//#7
+abd araouf#//#dino#//#dino@gmail.com#//#069874524#//#raouf#//#3223#//#225
+sliman#//#mlili#//#sliman.mlili@gmail.com#//#066987455#//#SLIMAN#//#3636#//#279
+
+Press any key to continue . . . 
+Hriz#//#achref#//#hriz.achref@gmail.com#//#0585957994#//#A101#//#1235#//#0.000031
+badi#//#mousab#//#badi.mousab@gmail.com#//#074287447#//#A102#//#1254#//#501.127991
+adlan#//#mahdi#//#adlan.mahdi@gmail.com#//#068574254#//#A103#//#1274#//#0.002930
+kribaa#//#ilyas#//#kribaa.ilyas@gmail.com#//#0785978451#//#A104#//#0234#//#0.000977
