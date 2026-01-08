@@ -1,0 +1,77 @@
+﻿  ConsoleApplication1.cpp
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\ClsString.h(42,26): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\ClsString.h(237,25): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\ClsString.h(264,25): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\ClsString.h(332,19): warning C4267: '=': conversion from 'size_t' to 'short', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\ClsString.h(337,20): warning C4267: '=': conversion from 'size_t' to 'short', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsUser.h(174,10): warning C4240: nonstandard extension used: access to 'clsUser::stLoginRegisterRecord' now defined to be 'public', previously it was defined to be 'private'
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+      C:\Users\abd araouf\Desktop\The project is complete\Lesson (156,11):
+      see declaration of 'clsUser::stLoginRegisterRecord'
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsUser.h(181,15): warning C4091: 'static ': ignored on left of 'clsUser::enPermissions' when no variable is declared
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsUser.h(328,15): warning C4091: 'static ': ignored on left of 'clsUser::enSaveResults' when no variable is declared
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsUser.h(30,149): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\ClsInputValidate.h(170,18): warning C4244: 'initializing': conversion from 'double' to 'short', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\ClsInputValidate.h(175,28): warning C4244: '=': conversion from 'double' to 'short', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsBankClient.h(188,11): warning C4240: nonstandard extension used: access to 'clsBankClient::stTrnsferLogRecord' now defined to be 'public', previously it was defined to be 'private'
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+      C:\Users\abd araouf\Desktop\The project is complete\Lesson (170,11):
+      see declaration of 'clsBankClient::stTrnsferLogRecord'
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsBankClient.h(332,16): warning C4091: 'static ': ignored on left of 'clsBankClient::enSaveResults' when no variable is declared
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsBankClient.h(179,35): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsBankClient.h(180,43): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsBankClient.h(181,44): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsBankClient.h(413,23): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsBankClient.h(426,24): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsTotalBalancesScreen.h(5,9): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsTotalBalancesScreen.h(62,84): warning C4244: 'argument': conversion from 'double' to '__int64', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsCurrency.h(24,101): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsMainScreen.h(22,17): warning C4091: 'static ': ignored on left of 'clsMainScreen::enMainMenueOptions' when no variable is declared
+  (compiling source file '../../Lesson%20#3%20-%20Add%20New%20Client/ConsoleApplication1/ConsoleApplication1.cpp')
+  
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsBankClient.h(370,1): warning C4715: 'clsBankClient::Save': not all control paths return a value
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsUser.h(367,1): warning C4715: 'clsUser::Save': not all control paths return a value
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsCurrency.h(185,1): warning C4715: 'clsCurrency::FindByCode': not all control paths return a value
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsCurrency.h(216,1): warning C4715: 'clsCurrency::FindByCountry': not all control paths return a value
+C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\ConsoleApplication1\clsUtil.h(233,1): warning C4715: 'ClsUtil::NumberToText': not all control paths return a value
+  ConsoleApplication1.vcxproj -> C:\Users\abd araouf\Desktop\The project is complete\Lesson #3 - Add New Client\x64\Debug\ConsoleApplication1.exe
